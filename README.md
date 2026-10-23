@@ -223,6 +223,7 @@ The kit has three buttons: **[Mode]**, **[Up]**, and **[Down]**.
 - **Your turn:** **[Up]** / **[Down]** raise or lower the throw angle (15° to 75°, 5° per press). **Hold [Mode]** to charge the power bar and **release** to throw.
 - **Other player's turn:** the buttons do nothing. In 1 Player the computer aims for a moment, then throws.
 - **Waiting for the other kit:** **[Mode]** gives up and goes back to the menu.
+- **Leave a match:** press **[Up]** while holding **[Down]** (or the other way round) at any time. In 2 Players the other kit shows **LINK LOST** after 6 seconds.
 - **Game over:** **[Up]** plays again, **[Mode]** goes back to the menu.
 
 #### Game Mechanics:

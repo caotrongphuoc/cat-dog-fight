@@ -183,6 +183,20 @@ static bool cd_game_is_animating()
 	return (power.state == POWER_STATE_CHARGE) || (missile.state == MISSILE_STATE_FLY) || (cat.hit_ticks > 0) || (dog.hit_ticks > 0) || (border.hit_ticks > 0);
 }
 
+// UP and DOWN held state, pressing one while the other is held leaves the match
+static bool up_held;
+static bool down_held;
+
+// Stop every game timer and go back to the menu (give up waiting, or UP+DOWN during a match)
+static void cd_game_leave_to_menu()
+{
+	timer_remove_attr(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK);
+	task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RESET);
+	task_post_pure_msg(CD_GAME_CPU_ID, CD_GAME_CPU_RESET);
+	task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_RESET);
+	SCREEN_TRAN(scr_game_menu_handle, &scr_game_menu);
+}
+
 static void cd_game_aim_post(uint8_t cat_sig, uint8_t dog_sig)
 {
 	if (match.turn == MATCH_TURN_CAT)
@@ -214,6 +228,8 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 		task_post_pure_msg(CD_GAME_POWER_ID, CD_GAME_POWER_SETUP);
 		task_post_pure_msg(CD_GAME_MISSILE_ID, CD_GAME_MISSILE_SETUP);
 		timer_remove_attr(AC_TASK_DISPLAY_ID, AC_DISPLAY_SHOW_IDLE);
+		up_held = false;
+		down_held = false;
 	}
 	break;
 
@@ -259,6 +275,12 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 	case AC_DISPLAY_BUTTON_UP_PRESSED:
 	{
 		APP_DBG_SIG("AC_DISPLAY_BUTTON_UP_PRESSED\n");
+		up_held = true;
+		if (down_held)
+		{
+			cd_game_leave_to_menu();
+			break;
+		}
 		if (cd_game_can_aim())
 		{
 			cd_game_aim_post(CD_GAME_CAT_AIM_UP, CD_GAME_DOG_AIM_UP);
@@ -266,13 +288,33 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 	}
 	break;
 
+	case AC_DISPLAY_BUTTON_UP_RELEASED:
+	{
+		APP_DBG_SIG("AC_DISPLAY_BUTTON_UP_RELEASED\n");
+		up_held = false;
+	}
+	break;
+
 	case AC_DISPLAY_BUTTON_DOWN_PRESSED:
 	{
 		APP_DBG_SIG("AC_DISPLAY_BUTTON_DOWN_PRESSED\n");
+		down_held = true;
+		if (up_held)
+		{
+			cd_game_leave_to_menu();
+			break;
+		}
 		if (cd_game_can_aim())
 		{
 			cd_game_aim_post(CD_GAME_CAT_AIM_DOWN, CD_GAME_DOG_AIM_DOWN);
 		}
+	}
+	break;
+
+	case AC_DISPLAY_BUTTON_DOWN_RELEASED:
+	{
+		APP_DBG_SIG("AC_DISPLAY_BUTTON_DOWN_RELEASED\n");
+		down_held = false;
 	}
 	break;
 
@@ -282,12 +324,7 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 		if (match.state == MATCH_STATE_WAIT)
 		{
 			// Give up waiting for the rival board
-			timer_remove_attr(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK);
-			task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RESET);
-			task_post_pure_msg(CD_GAME_CPU_ID, CD_GAME_CPU_RESET);
-			task_post_pure_msg(CD_GAME_CPU_ID, CD_GAME_CPU_RESET);
-			task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_RESET);
-			SCREEN_TRAN(scr_game_menu_handle, &scr_game_menu);
+			cd_game_leave_to_menu();
 			break;
 		}
 		if (cd_game_can_aim())

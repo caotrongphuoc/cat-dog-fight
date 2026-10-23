@@ -180,7 +180,7 @@ sequenceDiagram
 <p align="center"><strong><em>Figure 4:</em></strong> Game reset flow</p>
 
 
-While waiting for the other kit, **[Mode]** runs the same reset (tick, Link, CPU and Match) and opens the menu.
+While waiting for the other kit, **[Mode]** runs the same reset (tick, Link, CPU and Match) and opens the menu, and so does the **[Up]+[Down]** chord at any time during a match (`cd_game_leave_to_menu()`). A missile still flying is frozen with the tick, and a late `CD_GAME_MATCH_TURN_END` is ignored because the match is no longer in `PLAY`.
 
 ## II. Code References
 
@@ -233,6 +233,8 @@ The three buttons are polled every 10 ms by `sys_irq_timer_10ms()`. Each button 
 | MODE Released | `AC_DISPLAY_BUTTON_MODE_RELEASED` -> `AC_TASK_DISPLAY_ID` | Game | `CD_GAME_POWER_RELEASE` (ignored when not charging) |
 | UP / DOWN Pressed | `AC_DISPLAY_BUTTON_UP_PRESSED` / `DOWN_PRESSED` | Menu | Previous / next item |
 | UP / DOWN Pressed | same | Game, this board aims | `CD_GAME_CAT_AIM_UP` / `AIM_DOWN` (or the `DOG` signals on the dog board) |
+| UP Pressed while DOWN held, or DOWN Pressed while UP held | same | Game, any state | Leave the match: same reset as giving up the wait, back to the menu |
+| UP / DOWN Released | `AC_DISPLAY_BUTTON_UP_RELEASED` / `DOWN_RELEASED` | Game | Clear the held flag used by the UP+DOWN chord |
 | UP Pressed | same | Game over | Play again (`SCREEN_TRAN` to the game screen) |
 | MODE Pressed | `AC_DISPLAY_BUTTON_MODE_PRESSED` | Game over | Back to the menu |
 | Any | Any of the above | Game, other player's turn or flight | Ignored |
