@@ -193,6 +193,7 @@ enum {
 	CD_GAME_MATCH_THROW,
 	CD_GAME_MATCH_TURN_END,
 	CD_GAME_MATCH_RESULT,
+	CD_GAME_MATCH_LINK_LOST,
 	CD_GAME_MATCH_RESET,
 };
 
@@ -283,11 +284,11 @@ enum {
  */
 /*****************************************************************************/
 /* define timer */
-#define CD_GAME_LINK_READY_INTERVAL									(1000)
+#define CD_GAME_LINK_TICK_INTERVAL									(1000)
 /* define signal */
 enum {
 	CD_GAME_LINK_SETUP = CD_GAME_DEFINE_SIG,
-	CD_GAME_LINK_READY_TICK,
+	CD_GAME_LINK_TICK,
 	CD_GAME_LINK_SEND_START,
 	CD_GAME_LINK_SEND_THROW,
 	CD_GAME_LINK_SEND_RESULT,
@@ -296,6 +297,8 @@ enum {
 	CD_GAME_LINK_RX_START,
 	CD_GAME_LINK_RX_THROW,
 	CD_GAME_LINK_RX_RESULT,
+	CD_GAME_LINK_RX_PING,
+	CD_GAME_LINK_RX_ACK,
 };
 
 /*****************************************************************************/

@@ -33,6 +33,18 @@ static void cd_game_link_send_common(uint8_t sig, uint8_t* data, uint8_t len)
 	link.tx++;
 }
 
+// Any message from the rival keeps the link alive
+static void cd_game_link_received(ak_msg_t* msg, bool from_playing_rival)
+{
+	link.rx++;
+	link.last_rx_sig = msg->sig;
+	link.last_rx_ms = sys_ctrl_millis();
+	if (from_playing_rival)
+	{
+		link.rival_playing = true;
+	}
+}
+
 void cd_game_link_handle(ak_msg_t* msg)
 {
 	switch (msg->sig)
@@ -43,25 +55,46 @@ void cd_game_link_handle(ak_msg_t* msg)
 		link.tx = 0;
 		link.rx = 0;
 		link.last_rx_sig = 0;
+		link.last_rx_ms = sys_ctrl_millis();
+		link.ticks = 0;
+		link.rival_playing = false;
+		link.result_pending = false;
 		cd_game_link_send_pure(CD_GAME_LINK_RX_READY);
-		timer_set(CD_GAME_LINK_ID, CD_GAME_LINK_READY_TICK, CD_GAME_LINK_READY_INTERVAL, TIMER_PERIODIC);
+		timer_set(CD_GAME_LINK_ID, CD_GAME_LINK_TICK, CD_GAME_LINK_TICK_INTERVAL, TIMER_PERIODIC);
 	}
 	break;
 
-	case CD_GAME_LINK_READY_TICK:
+	case CD_GAME_LINK_TICK:
 	{
-		if (match.state != MATCH_STATE_WAIT)
+		link.ticks++;
+		if (match.state == MATCH_STATE_WAIT)
 		{
-			timer_remove_attr(CD_GAME_LINK_ID, CD_GAME_LINK_READY_TICK);
+			cd_game_link_send_pure(CD_GAME_LINK_RX_READY);
 			break;
 		}
-		cd_game_link_send_pure(CD_GAME_LINK_RX_READY);
+		if (link.result_pending)
+		{
+			cd_game_link_send_common(CD_GAME_LINK_RX_RESULT, (uint8_t*)&link.result, sizeof(link.result));
+		}
+		if (match.state != MATCH_STATE_PLAY)
+		{
+			break;
+		}
+		if (link.ticks % LINK_PING_TICKS == 0)
+		{
+			cd_game_link_send_pure(CD_GAME_LINK_RX_PING);
+		}
+		if (sys_ctrl_millis() - link.last_rx_ms > LINK_LOST_TIMEOUT)
+		{
+			task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_LINK_LOST);
+		}
 	}
 	break;
 
 	case CD_GAME_LINK_SEND_START:
 	{
 		APP_DBG_SIG("CD_GAME_LINK_SEND_START\n");
+		link.last_rx_ms = sys_ctrl_millis();
 		cd_game_link_start_t start = {wind.speed};
 		cd_game_link_send_common(CD_GAME_LINK_RX_START, (uint8_t*)&start, sizeof(start));
 	}
@@ -78,23 +111,30 @@ void cd_game_link_handle(ak_msg_t* msg)
 	case CD_GAME_LINK_SEND_RESULT:
 	{
 		APP_DBG_SIG("CD_GAME_LINK_SEND_RESULT\n");
-		cd_game_link_result_t result = {missile.result, cat.hp, dog.hp, wind.speed};
-		cd_game_link_send_common(CD_GAME_LINK_RX_RESULT, (uint8_t*)&result, sizeof(result));
+		link.result = {missile.result, cat.hp, dog.hp, wind.speed};
+		link.result_pending = true;
+		cd_game_link_send_common(CD_GAME_LINK_RX_RESULT, (uint8_t*)&link.result, sizeof(link.result));
 	}
 	break;
 
 	case CD_GAME_LINK_RESET:
 	{
 		APP_DBG_SIG("CD_GAME_LINK_RESET\n");
-		timer_remove_attr(CD_GAME_LINK_ID, CD_GAME_LINK_READY_TICK);
+		link.result_pending = false;
+		timer_remove_attr(CD_GAME_LINK_ID, CD_GAME_LINK_TICK);
 	}
 	break;
 
 	case CD_GAME_LINK_RX_READY:
 	{
 		APP_DBG_SIG("CD_GAME_LINK_RX_READY\n");
-		link.rx++;
-		link.last_rx_sig = msg->sig;
+		cd_game_link_received(msg, false);
+		// READY from a rival that was already playing: it left the match and came back
+		if (match.state == MATCH_STATE_PLAY && link.rival_playing)
+		{
+			task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_LINK_LOST);
+			break;
+		}
 		if (CD_GAME_BOARD_ME != MATCH_TURN_CAT)
 		{
 			break;
@@ -116,8 +156,7 @@ void cd_game_link_handle(ak_msg_t* msg)
 	case CD_GAME_LINK_RX_START:
 	{
 		APP_DBG_SIG("CD_GAME_LINK_RX_START\n");
-		link.rx++;
-		link.last_rx_sig = msg->sig;
+		cd_game_link_received(msg, false);
 		if (CD_GAME_BOARD_ME == MATCH_TURN_CAT || match.state != MATCH_STATE_WAIT || get_data_len_common_msg(msg) != sizeof(cd_game_link_start_t))
 		{
 			break;
@@ -131,8 +170,9 @@ void cd_game_link_handle(ak_msg_t* msg)
 	case CD_GAME_LINK_RX_THROW:
 	{
 		APP_DBG_SIG("CD_GAME_LINK_RX_THROW\n");
-		link.rx++;
-		link.last_rx_sig = msg->sig;
+		cd_game_link_received(msg, true);
+		// The rival only throws after it applied our last RESULT
+		link.result_pending = false;
 		if (match.state != MATCH_STATE_PLAY || match.phase != MATCH_PHASE_AIM || match.turn == CD_GAME_BOARD_ME || get_data_len_common_msg(msg) != sizeof(cd_game_link_throw_t))
 		{
 			break;
@@ -154,13 +194,28 @@ void cd_game_link_handle(ak_msg_t* msg)
 	case CD_GAME_LINK_RX_RESULT:
 	{
 		APP_DBG_SIG("CD_GAME_LINK_RX_RESULT\n");
-		link.rx++;
-		link.last_rx_sig = msg->sig;
+		cd_game_link_received(msg, true);
+		// Ack every copy, the thrower keeps sending until it hears back
+		cd_game_link_send_pure(CD_GAME_LINK_RX_ACK);
 		if (match.state != MATCH_STATE_PLAY || match.turn == CD_GAME_BOARD_ME || get_data_len_common_msg(msg) != sizeof(cd_game_link_result_t))
 		{
 			break;
 		}
 		task_post_common_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_RESULT, get_data_common_msg(msg), sizeof(cd_game_link_result_t));
+	}
+	break;
+
+	case CD_GAME_LINK_RX_PING:
+	{
+		cd_game_link_received(msg, true);
+	}
+	break;
+
+	case CD_GAME_LINK_RX_ACK:
+	{
+		APP_DBG_SIG("CD_GAME_LINK_RX_ACK\n");
+		cd_game_link_received(msg, true);
+		link.result_pending = false;
 	}
 	break;
 

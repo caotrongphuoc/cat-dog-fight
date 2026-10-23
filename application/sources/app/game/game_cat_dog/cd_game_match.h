@@ -36,13 +36,14 @@
 #define CD_GAME_BOARD_ME (MATCH_TURN_CAT)
 #endif
 
-// Match states: wait for the rival board, play, over
+// Match states: wait for the rival board, play, over, rival board gone
 enum
 {
 	MATCH_STATE_OFF = 0,
 	MATCH_STATE_WAIT,
 	MATCH_STATE_PLAY,
 	MATCH_STATE_OVER,
+	MATCH_STATE_LOST,
 };
 
 // Whose turn it is, cat always opens the match

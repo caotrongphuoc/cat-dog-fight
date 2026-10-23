@@ -139,7 +139,7 @@ static void cd_game_missile_display()
 
 static void cd_game_wait_display()
 {
-	if (match.state != MATCH_STATE_WAIT)
+	if (match.state != MATCH_STATE_WAIT && match.state != MATCH_STATE_LOST)
 	{
 		return;
 	}
@@ -148,7 +148,14 @@ static void cd_game_wait_display()
 	view_render.setTextSize(1);
 	view_render.setTextColor(WHITE);
 	view_render.setCursor(CD_GAME_HUD_WAIT_TEXT_AXIS_X, CD_GAME_HUD_WAIT_TEXT_AXIS_Y);
-	view_render.print(CD_GAME_BOARD_ME == MATCH_TURN_CAT ? "Waiting for DOG" : "Waiting for CAT");
+	if (match.state == MATCH_STATE_LOST)
+	{
+		view_render.print("   LINK LOST");
+	}
+	else
+	{
+		view_render.print(CD_GAME_BOARD_ME == MATCH_TURN_CAT ? "Waiting for DOG" : "Waiting for CAT");
+	}
 }
 
 void view_scr_game_cat_dog()
@@ -238,7 +245,14 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 		timer_remove_attr(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK);
 		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RESET);
 		task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_RESET);
-		SCREEN_TRAN(scr_game_over_handle, &scr_game_over);
+		if (match.state == MATCH_STATE_LOST)
+		{
+			SCREEN_TRAN(scr_game_menu_handle, &scr_game_menu);
+		}
+		else
+		{
+			SCREEN_TRAN(scr_game_over_handle, &scr_game_over);
+		}
 	}
 	break;
 

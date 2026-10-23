@@ -43,7 +43,7 @@ void view_scr_game_over()
 	}
 
 	view_render.setCursor(GAME_OVER_HINT_AXIS_X, GAME_OVER_HINT_AXIS_Y);
-	view_render.print("MODE: menu");
+	view_render.print("UP:again  MODE:menu");
 }
 
 /*****************************************************************************/
@@ -57,6 +57,14 @@ void scr_game_over_handle(ak_msg_t* msg)
 	case SCREEN_ENTRY:
 	{
 		APP_DBG_SIG("SCREEN_ENTRY\n");
+	}
+	break;
+
+	case AC_DISPLAY_BUTTON_UP_PRESSED:
+	{
+		APP_DBG_SIG("AC_DISPLAY_BUTTON_UP_PRESSED\n");
+		BUZZER_PlaySound(BUZZER_SOUND_CLICK);
+		SCREEN_TRAN(scr_game_cat_dog_handle, &scr_game_cat_dog);
 	}
 	break;
 

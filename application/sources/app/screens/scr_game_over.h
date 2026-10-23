@@ -41,7 +41,7 @@ extern void scr_game_over_handle(ak_msg_t* msg);
 // Winner bitmap in the middle, hint on the bottom line
 #define GAME_OVER_WINNER_AXIS_X ((LCD_WIDTH - CAT_SIZE_BITMAP_X) / 2)
 #define GAME_OVER_WINNER_AXIS_Y (34)
-#define GAME_OVER_HINT_AXIS_X (34)
+#define GAME_OVER_HINT_AXIS_X (7)
 #define GAME_OVER_HINT_AXIS_Y (56)
 
 #endif //__SCR_GAME_OVER_H__

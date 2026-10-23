@@ -119,6 +119,19 @@ void cd_game_match_handle(ak_msg_t* msg)
 	}
 	break;
 
+	case CD_GAME_MATCH_LINK_LOST:
+	{
+		APP_DBG_SIG("CD_GAME_MATCH_LINK_LOST\n");
+		if (match.state != MATCH_STATE_PLAY)
+		{
+			break;
+		}
+		match.state = MATCH_STATE_LOST;
+		task_post_pure_msg(AC_TASK_DISPLAY_ID, AC_DISPLAY_RENDER_SCREEN);
+		timer_set(AC_TASK_DISPLAY_ID, CD_GAME_EXIT_GAME, CD_GAME_TIME_EXIT_INTERVAL, TIMER_ONE_SHOT);
+	}
+	break;
+
 	case CD_GAME_MATCH_RESET:
 	{
 		APP_DBG_SIG("CD_GAME_MATCH_RESET\n");

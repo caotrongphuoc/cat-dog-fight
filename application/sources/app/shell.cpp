@@ -1052,7 +1052,7 @@ int32_t shell_rf(uint8_t* argv) {
 }
 
 /* lnk s                           : link counters
- * lnk r h                         : fake READY from the rival
+ * lnk r h | p | a                 : fake READY / PING / ACK from the rival
  * lnk r s <wind>                  : fake START
  * lnk r t <angle> <power>         : fake THROW
  * lnk r e <result> <cat> <dog> <wind> : fake RESULT */
@@ -1062,10 +1062,16 @@ int32_t shell_lnk(uint8_t* argv) {
 	char* what = str_parser_get_attr(2);
 
 	if (n == 2 && *op == 's') {
-		LOGIN_PRINT("link tx:%d rx:%d last:%d\n", link.tx, link.rx, link.last_rx_sig);
+		LOGIN_PRINT("link tx:%d rx:%d last:%d idle:%d ms result_pending:%d\n", link.tx, link.rx, link.last_rx_sig, sys_ctrl_millis() - link.last_rx_ms, link.result_pending);
 	}
 	else if (n >= 3 && *op == 'r' && *what == 'h') {
 		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RX_READY);
+	}
+	else if (n >= 3 && *op == 'r' && *what == 'p') {
+		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RX_PING);
+	}
+	else if (n >= 3 && *op == 'r' && *what == 'a') {
+		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RX_ACK);
 	}
 	else if (n == 4 && *op == 'r' && *what == 's') {
 		cd_game_link_start_t start = {(int8_t)atoi(str_parser_get_attr(3))};
@@ -1080,7 +1086,7 @@ int32_t shell_lnk(uint8_t* argv) {
 		task_post_common_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RX_RESULT, (uint8_t*)&result, sizeof(result));
 	}
 	else {
-		LOGIN_PRINT("usage: lnk s | lnk r h | r s <wind> | r t <angle> <power> | r e <res> <cat> <dog> <wind>\n");
+		LOGIN_PRINT("usage: lnk s | lnk r h|p|a | r s <wind> | r t <angle> <power> | r e <res> <cat> <dog> <wind>\n");
 	}
 	return 0;
 }
