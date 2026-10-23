@@ -79,6 +79,7 @@ int32_t shell_boot(uint8_t* argv);
 int32_t shell_fwu(uint8_t* argv);
 int32_t shell_psv(uint8_t* argv);
 int32_t shell_buzzer(uint8_t* argv);
+int32_t shell_btn(uint8_t* argv);
 
 /*****************************************************************************/
 /*  command table
@@ -109,6 +110,7 @@ const cmd_line_t lgn_cmd_table[] = {
 	/* debug command */
 	/*************************************************************************/
 	{(const int8_t*)"dbg",		shell_dbg,			(const int8_t*)"dbg"},
+	{(const int8_t*)"btn",		shell_btn,			(const int8_t*)"simulate button press"},
 
 	/* End Of Table */
 	{(const int8_t*)0,(pf_cmd_func)0,(const int8_t*)0}
@@ -930,5 +932,49 @@ int32_t shell_buzzer(uint8_t* argv) {
 		break;
 	}
 
+	return 0;
+}
+
+/* btn <m|u|d>         : press and release at once
+ * btn <m|u|d> <ms>    : hold for ms then release (timer posts the release) */
+#define SHELL_BTN_HOLD_MAX_MS		(10000)
+
+int32_t shell_btn(uint8_t* argv) {
+	uint8_t pressed_sig, released_sig;
+	uint32_t hold_ms = 0;
+
+	if (str_parser((char*)argv) < 2 || strlen(str_parser_get_attr(1)) != 1) {
+		LOGIN_PRINT("usage: btn <m|u|d> [hold_ms]\n");
+		return 0;
+	}
+
+	switch (*str_parser_get_attr(1)) {
+	case 'm': pressed_sig = AC_DISPLAY_BUTTON_MODE_PRESSED; released_sig = AC_DISPLAY_BUTTON_MODE_RELEASED; break;
+	case 'u': pressed_sig = AC_DISPLAY_BUTTON_UP_PRESSED;   released_sig = AC_DISPLAY_BUTTON_UP_RELEASED;   break;
+	case 'd': pressed_sig = AC_DISPLAY_BUTTON_DOWN_PRESSED; released_sig = AC_DISPLAY_BUTTON_DOWN_RELEASED; break;
+	default:
+		LOGIN_PRINT("usage: btn <m|u|d> [hold_ms]\n");
+		return 0;
+	}
+
+	if (str_parser_get_attr(2) != NULL) {
+		hold_ms = atoi(str_parser_get_attr(2));
+		if (hold_ms == 0 || hold_ms > SHELL_BTN_HOLD_MAX_MS) {
+			LOGIN_PRINT("hold_ms must be 1..%d\n", SHELL_BTN_HOLD_MAX_MS);
+			return 0;
+		}
+	}
+
+	task_post_pure_msg(AC_TASK_DISPLAY_ID, pressed_sig);
+	timer_set(AC_TASK_DISPLAY_ID, AC_DISPLAY_SHOW_IDLE, AC_DISPLAY_IDLE_INTERVAL, TIMER_ONE_SHOT);
+
+	if (hold_ms) {
+		timer_set(AC_TASK_DISPLAY_ID, released_sig, hold_ms, TIMER_ONE_SHOT);
+	}
+	else {
+		task_post_pure_msg(AC_TASK_DISPLAY_ID, released_sig);
+	}
+
+	LOGIN_PRINT("btn %c %d\n", *str_parser_get_attr(1), hold_ms);
 	return 0;
 }
