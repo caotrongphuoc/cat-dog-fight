@@ -23,9 +23,18 @@
 #define IF_TYPE_RF24_MIN					(0)
 #define IF_TYPE_RF24_GW						(0)
 #define IF_TYPE_RF24_AC						(1)
+#define IF_TYPE_RF24_CAT					(1)
+#define IF_TYPE_RF24_DOG					(2)
 #define IF_TYPE_RF24_MAX					(99)
 
-#define IF_TYPE_RF24_ME						IF_TYPE_RF24_AC
+/* board role is chosen at build time: make BOARD=cat|dog */
+#if defined (CD_GAME_BOARD_DOG)
+#define IF_TYPE_RF24_ME						IF_TYPE_RF24_DOG
+#define IF_TYPE_RF24_RIVAL					IF_TYPE_RF24_CAT
+#else
+#define IF_TYPE_RF24_ME						IF_TYPE_RF24_CAT
+#define IF_TYPE_RF24_RIVAL					IF_TYPE_RF24_DOG
+#endif
 
 /** APP interface, communication via socket interface
  *

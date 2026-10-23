@@ -1007,7 +1007,7 @@ int32_t shell_rf(uint8_t* argv) {
 	switch (*(argv + 3)) {
 	case 's': {
 		uint8_t* phy_addr __attribute__((unused)) = nrf_get_src_phy_addr();
-		LOGIN_PRINT("me: %d phy addr: %02X %02X %02X %02X %02X\n", IF_TYPE_RF24_ME, phy_addr[0], phy_addr[1], phy_addr[2], phy_addr[3], phy_addr[4]);
+		LOGIN_PRINT("me: %d rival: %d phy addr: %02X %02X %02X %02X %02X\n", IF_TYPE_RF24_ME, IF_TYPE_RF24_RIVAL, phy_addr[0], phy_addr[1], phy_addr[2], phy_addr[3], phy_addr[4]);
 		LOGIN_PRINT("channel: %d (cfg %d)\n", hal_nrf_get_rf_channel(), NRF_PHY_CHANEL_CFG);
 		LOGIN_PRINT("op mode: %s\n", hal_nrf_get_operation_mode() == HAL_NRF_PRX ? "PRX" : "PTX");
 		LOGIN_PRINT("power: %s\n", hal_nrf_get_power_mode() == HAL_NRF_PWR_UP ? "UP" : "DOWN");

@@ -15,8 +15,18 @@ SOC_FLASH_BYTES = 131072 # 128KB
 SOC_SRAM_BYTES = 16384	 # 16KB
 FLASH_BASE_ADDR_VAL = 0x08000000
 
-# Name of build target ex: cat-dog-fight-application.bin
-NAME_MODULE = cat-dog-fight-application
+# Board role ex: make BOARD=cat | make BOARD=dog (each role has its own RF24 address)
+BOARD ?= cat
+ifeq ($(BOARD),cat)
+BOARD_OPTION = -DCD_GAME_BOARD_CAT
+else ifeq ($(BOARD),dog)
+BOARD_OPTION = -DCD_GAME_BOARD_DOG
+else
+$(error BOARD must be cat or dog)
+endif
+
+# Name of build target ex: cat-dog-fight-cat-application.bin
+NAME_MODULE = cat-dog-fight-$(BOARD)-application
 PROJECT = $(NAME_MODULE)
 
 WORKSPACE_TOOLS_PATH	?= $(abspath ../../../tools)
@@ -198,6 +208,7 @@ GENERAL_FLAGS +=			\
 		$(IF_OPTION)		\
 		$(TASK_OPTION)		\
 		$(APP_SILENT_OPTION)	\
+		$(BOARD_OPTION)		\
 		$(HARDWARE_OPTION)  \
 		-DUSE_STDPERIPH_DRIVER	\
 		-DSTM32L1XX_MD		\
