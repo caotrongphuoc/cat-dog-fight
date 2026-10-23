@@ -15,6 +15,8 @@
 
 #include "view_render.h"
 
+#include "buzzer.h"
+
 #include "cd_game_match.h"
 #include "cd_game_cat.h"
 #include "cd_game_dog.h"

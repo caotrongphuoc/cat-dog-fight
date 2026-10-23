@@ -2,6 +2,16 @@
 
 cd_game_match_t match;
 
+// Test builds (APP_SILENT_EN) stay silent whatever the saved setting says
+static void cd_game_match_apply_sound()
+{
+#if defined(APP_SILENT_EN)
+	BUZZER_Silent(BUZZER_SILENT_ON);
+#else
+	BUZZER_Silent(match.record.silent ? BUZZER_SILENT_ON : BUZZER_SILENT_OFF);
+#endif
+}
+
 // Next turn, or game over when a player has no HP left
 static void cd_game_match_next_turn(uint8_t cat_hp, uint8_t dog_hp)
 {
@@ -11,6 +21,16 @@ static void cd_game_match_next_turn(uint8_t cat_hp, uint8_t dog_hp)
 	{
 		match.state = MATCH_STATE_OVER;
 		match.winner = (cat_hp == 0) ? MATCH_TURN_DOG : MATCH_TURN_CAT;
+		if (match.winner == MATCH_TURN_CAT)
+		{
+			match.record.cat_wins++;
+		}
+		else
+		{
+			match.record.dog_wins++;
+		}
+		cd_game_record_write(&match.record);
+		BUZZER_PlaySound(match.winner == CD_GAME_BOARD_ME ? BUZZER_SOUND_HIGHSCORE : BUZZER_SOUND_LOWSCORE);
 		timer_set(AC_TASK_DISPLAY_ID, CD_GAME_EXIT_GAME, CD_GAME_TIME_EXIT_INTERVAL, TIMER_ONE_SHOT);
 		return;
 	}
@@ -33,6 +53,24 @@ void cd_game_match_handle(ak_msg_t* msg)
 {
 	switch (msg->sig)
 	{
+	case CD_GAME_MATCH_RECORD_LOAD:
+	{
+		APP_DBG_SIG("CD_GAME_MATCH_RECORD_LOAD\n");
+		cd_game_record_read(&match.record);
+		cd_game_match_apply_sound();
+		BUZZER_PlaySound(BUZZER_SOUND_STARTUP);
+	}
+	break;
+
+	case CD_GAME_MATCH_SOUND_TOGGLE:
+	{
+		APP_DBG_SIG("CD_GAME_MATCH_SOUND_TOGGLE\n");
+		match.record.silent = !match.record.silent;
+		cd_game_record_write(&match.record);
+		cd_game_match_apply_sound();
+	}
+	break;
+
 	case CD_GAME_MATCH_SETUP:
 	{
 		APP_DBG_SIG("CD_GAME_MATCH_SETUP\n");
@@ -51,6 +89,7 @@ void cd_game_match_handle(ak_msg_t* msg)
 		if (match.state == MATCH_STATE_WAIT)
 		{
 			match.state = MATCH_STATE_PLAY;
+			BUZZER_PlaySound(BUZZER_SOUND_LETS_GO);
 			task_post_pure_msg(AC_TASK_DISPLAY_ID, AC_DISPLAY_RENDER_SCREEN);
 		}
 	}
@@ -64,6 +103,7 @@ void cd_game_match_handle(ak_msg_t* msg)
 			break;
 		}
 		match.phase = MATCH_PHASE_FLY;
+		BUZZER_PlaySound(BUZZER_SOUND_CLICK);
 		task_post_pure_msg(CD_GAME_MISSILE_ID, CD_GAME_MISSILE_THROW);
 		task_post_pure_msg(AC_TASK_DISPLAY_ID, CD_GAME_ANIMATE);
 		if (match.turn == CD_GAME_BOARD_ME)
@@ -127,6 +167,7 @@ void cd_game_match_handle(ak_msg_t* msg)
 			break;
 		}
 		match.state = MATCH_STATE_LOST;
+		BUZZER_PlaySound(BUZZER_SOUND_GOODBYE);
 		task_post_pure_msg(AC_TASK_DISPLAY_ID, AC_DISPLAY_RENDER_SCREEN);
 		timer_set(AC_TASK_DISPLAY_ID, CD_GAME_EXIT_GAME, CD_GAME_TIME_EXIT_INTERVAL, TIMER_ONE_SHOT);
 	}

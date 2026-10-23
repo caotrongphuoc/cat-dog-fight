@@ -13,6 +13,9 @@
 #include "task_list.h"
 #include "task_display.h"
 
+#include "app_eeprom.h"
+#include "buzzer.h"
+
 #include "cd_game_cat.h"
 #include "cd_game_dog.h"
 #include "cd_game_link.h"
@@ -73,6 +76,9 @@ typedef struct
 	uint8_t result_cat_hp;
 	uint8_t result_dog_hp;
 	int8_t result_wind;
+
+	// Saved in EEPROM: mute setting and wins of each player on this board
+	cd_game_record_t record;
 } cd_game_match_t;
 
 extern cd_game_match_t match;

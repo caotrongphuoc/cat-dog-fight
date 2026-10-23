@@ -107,6 +107,15 @@ void cd_game_missile_handle(ak_msg_t* msg)
 		}
 
 		missile.state = MISSILE_STATE_IDLE;
+		if (missile.result == MISSILE_RESULT_HIT_CAT || missile.result == MISSILE_RESULT_HIT_DOG)
+		{
+			BUZZER_PlaySound(BUZZER_SOUND_BANG);
+		}
+		else if (missile.result == MISSILE_RESULT_HIT_BORDER)
+		{
+			BUZZER_PlaySound(BUZZER_SOUND_TONE_1);
+		}
+
 		if (missile.result == MISSILE_RESULT_HIT_CAT)
 		{
 			task_post_pure_msg(CD_GAME_CAT_ID, CD_GAME_CAT_HIT);

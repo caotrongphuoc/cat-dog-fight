@@ -164,7 +164,7 @@ int main_app() {
 #if defined (APP_SILENT_EN)
 	BUZZER_Silent(BUZZER_SILENT_ON);
 #endif
-	BUZZER_PlaySound(BUZZER_SOUND_STARTUP);
+	/* startup sound is played once the saved mute setting is loaded (CD_GAME_MATCH_RECORD_LOAD) */
 
 	/* get boot share data */
 	flash_read(APP_FLASH_INTTERNAL_SHARE_DATA_SECTOR_1, reinterpret_cast<uint8_t*>(&boot_app_share_data), sizeof(boot_app_share_data_t));

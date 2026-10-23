@@ -8,6 +8,7 @@ static uint8_t menu_item;
 
 static const char* const menu_item_name[MENU_ITEM_NUMBER] = {
     "<< Play >>",
+    "<<Sound: ON>>",
     "<< Exit >>",
 };
 
@@ -16,6 +17,17 @@ static const char* const menu_item_name[MENU_ITEM_NUMBER] = {
 /*****************************************************************************/
 
 static void view_scr_game_menu();
+
+static uint8_t cd_game_menu_digits(uint16_t value)
+{
+	uint8_t digits = 1;
+	while (value >= 10)
+	{
+		value /= 10;
+		digits++;
+	}
+	return digits;
+}
 
 view_dynamic_t dyn_view_game_menu = {
     {
@@ -39,10 +51,22 @@ void view_scr_game_menu()
 	view_render.print("CAT vs DOG");
 
 	view_render.setTextSize(1);
-	view_render.setCursor(MENU_ITEM_AXIS_X, MENU_ITEM_AXIS_Y);
-	view_render.print(menu_item_name[menu_item]);
+	const char* item = menu_item_name[menu_item];
+	if (menu_item == MENU_ITEM_SOUND && match.record.silent)
+	{
+		item = "<<Sound:OFF>>";
+	}
+	view_render.setCursor((LCD_WIDTH - strlen(item) * (X_SIZE_FONT + 1)) / 2, MENU_ITEM_AXIS_Y);
+	view_render.print(item);
 	view_render.setCursor(MENU_ROLE_AXIS_X, MENU_ROLE_AXIS_Y);
 	view_render.print(CD_GAME_BOARD_ME == MATCH_TURN_CAT ? "You: CAT" : "You: DOG");
+
+	// "<cat wins> : <dog wins>" centered, " : " is 3 characters
+	uint8_t len = cd_game_menu_digits(match.record.cat_wins) + 3 + cd_game_menu_digits(match.record.dog_wins);
+	view_render.setCursor((LCD_WIDTH - len * (X_SIZE_FONT + 1)) / 2, MENU_SCORE_AXIS_Y);
+	view_render.print(match.record.cat_wins);
+	view_render.print(" : ");
+	view_render.print(match.record.dog_wins);
 
 	view_render.drawBitmap(CAT_AXIS_X, CAT_AXIS_Y, bitmap_cat, CAT_SIZE_BITMAP_X, CAT_SIZE_BITMAP_Y, WHITE);
 	view_render.drawBitmap(DOG_AXIS_X, DOG_AXIS_Y, bitmap_dog, DOG_SIZE_BITMAP_X, DOG_SIZE_BITMAP_Y, WHITE);
@@ -87,6 +111,11 @@ void scr_game_menu_handle(ak_msg_t* msg)
 		if (menu_item == MENU_ITEM_PLAY)
 		{
 			SCREEN_TRAN(scr_game_cat_dog_handle, &scr_game_cat_dog);
+		}
+		else if (menu_item == MENU_ITEM_SOUND)
+		{
+			task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_SOUND_TOGGLE);
+			task_post_pure_msg(AC_TASK_DISPLAY_ID, AC_DISPLAY_RENDER_SCREEN);
 		}
 		else
 		{

@@ -2,6 +2,7 @@
 #define __SCR_GAME_MENU_H__
 
 #include <stdio.h>
+#include <string.h>
 
 #include "fsm.h"
 #include "port.h"
@@ -34,6 +35,7 @@ extern void scr_game_menu_handle(ak_msg_t* msg);
 enum
 {
 	MENU_ITEM_PLAY = 0,
+	MENU_ITEM_SOUND,
 	MENU_ITEM_EXIT,
 	MENU_ITEM_NUMBER,
 };
@@ -42,12 +44,14 @@ enum
 #define MENU_TITLE_AXIS_X (4)
 #define MENU_TITLE_AXIS_Y (0)
 
-// Selected entry under the title
-#define MENU_ITEM_AXIS_X (34)
+// Selected entry under the title, centered
 #define MENU_ITEM_AXIS_Y (20)
 
 // Role of this board under the entry
 #define MENU_ROLE_AXIS_X (40)
-#define MENU_ROLE_AXIS_Y (32)
+#define MENU_ROLE_AXIS_Y (30)
+
+// Wins saved in EEPROM, centered between the cat and the dog
+#define MENU_SCORE_AXIS_Y (40)
 
 #endif //__SCR_GAME_MENU_H__
