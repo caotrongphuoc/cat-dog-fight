@@ -20,6 +20,13 @@ const task_t app_task_table[] = {
 	{AC_TASK_DBG_ID				,	TASK_PRI_LEVEL_4	,	task_dbg			},
 	{AC_TASK_DISPLAY_ID			,	TASK_PRI_LEVEL_4	,	task_display		},
 
+	/* CAT DOG FIGHT GAME TASKS */
+	{CD_GAME_MATCH_ID			,	TASK_PRI_LEVEL_4	,	cd_game_match_handle	},
+	{CD_GAME_CAT_ID				,	TASK_PRI_LEVEL_4	,	cd_game_cat_handle		},
+	{CD_GAME_DOG_ID				,	TASK_PRI_LEVEL_4	,	cd_game_dog_handle		},
+	{CD_GAME_BORDER_ID			,	TASK_PRI_LEVEL_4	,	cd_game_border_handle	},
+	{CD_GAME_WIND_ID			,	TASK_PRI_LEVEL_4	,	cd_game_wind_handle		},
+
 	/*************************************************************************/
 	/* RF24 NETWORK TASK */
 	/*************************************************************************/

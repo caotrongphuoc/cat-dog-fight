@@ -44,6 +44,12 @@
 #include "flash.h"
 #include "buzzer.h"
 
+#include "cd_game_match.h"
+#include "cd_game_cat.h"
+#include "cd_game_dog.h"
+#include "cd_game_border.h"
+#include "cd_game_wind.h"
+
 #if defined (IF_NETWORK_NRF24_EN)
 #include "hal_nrf.h"
 #include "nrf_config.h"
@@ -397,6 +403,11 @@ int32_t shell_fatal(uint8_t* argv) {
 
 int32_t shell_stt(uint8_t* argv) {
 	(void)argv;
+	LOGIN_PRINT("match state:%d turn:%s me:%s\n", match.state, match.turn == MATCH_TURN_CAT ? "cat" : "dog", CD_GAME_BOARD_ME == MATCH_TURN_CAT ? "cat" : "dog");
+	LOGIN_PRINT("wind speed:%d\n", wind.speed);
+	LOGIN_PRINT("cat x:%d y:%d hp:%d\n", cat.x, cat.y, cat.hp);
+	LOGIN_PRINT("dog x:%d y:%d hp:%d\n", dog.x, dog.y, dog.hp);
+	LOGIN_PRINT("border x:%d y:%d w:%d h:%d\n", border.x, border.y, border.width, border.height);
 	return 0;
 }
 

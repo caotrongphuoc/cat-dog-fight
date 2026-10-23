@@ -27,6 +27,13 @@ enum {
 	AC_TASK_DBG_ID,
 	AC_TASK_DISPLAY_ID,
 
+	/* CAT DOG FIGHT GAME TASKS */
+	CD_GAME_MATCH_ID,
+	CD_GAME_CAT_ID,
+	CD_GAME_DOG_ID,
+	CD_GAME_BORDER_ID,
+	CD_GAME_WIND_ID,
+
 	/* NRF24 NETWORKS */
 #if defined (IF_NETWORK_NRF24_EN)
 	AC_RF24_PHY_ID,
@@ -72,6 +79,13 @@ extern void task_rf24_if(ak_msg_t*);
 extern void task_uart_if(ak_msg_t*);
 extern void task_dbg(ak_msg_t*);
 extern void task_display(ak_msg_t*);
+
+/* CAT DOG FIGHT GAME TASKS */
+extern void cd_game_match_handle(ak_msg_t*);
+extern void cd_game_cat_handle(ak_msg_t*);
+extern void cd_game_dog_handle(ak_msg_t*);
+extern void cd_game_border_handle(ak_msg_t*);
+extern void cd_game_wind_handle(ak_msg_t*);
 
 /* RF24 NETWORK TASK */
 extern void task_rf24_phy(ak_msg_t*);
