@@ -26,6 +26,8 @@
 #include "cd_game_dog.h"
 #include "cd_game_border.h"
 #include "cd_game_wind.h"
+#include "cd_game_power.h"
+#include "cd_game_missile.h"
 
 extern view_dynamic_t dyn_view_game_cat_dog;
 extern view_screen_t scr_game_cat_dog;
@@ -47,6 +49,13 @@ extern void scr_game_cat_dog_handle(ak_msg_t* msg);
 #define CD_GAME_HUD_WIND_AXIS_Y (2)
 #define CD_GAME_HUD_WIND_STEP (3)
 #define CD_GAME_HUD_WIND_HEAD (2)
+
+// Power bar over the head of the player whose turn it is
+#define CD_GAME_HUD_POWER_OFFSET_Y (6)
+#define CD_GAME_HUD_POWER_HEIGHT (4)
+
+// Aim line drawn from the hand of the player whose turn it is
+#define CD_GAME_HUD_AIM_LENGTH (10)
 
 // Wind strength printed under the arrow
 #define CD_GAME_HUD_WIND_TEXT_AXIS_X (CD_GAME_HUD_WIND_AXIS_X - 2)

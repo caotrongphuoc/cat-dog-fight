@@ -168,6 +168,17 @@ enum {
 };
 
 /*****************************************************************************/
+/*  Cat dog fight game 'SCREEN' task define
+ */
+/*****************************************************************************/
+/* define timer */
+#define CD_GAME_TIME_TICK_INTERVAL									(50)
+/* define signal */
+enum {
+	CD_GAME_TIME_TICK = CD_GAME_DEFINE_SIG,
+};
+
+/*****************************************************************************/
 /*  Cat dog fight game 'MATCH' task define
  */
 /*****************************************************************************/
@@ -175,6 +186,8 @@ enum {
 /* define signal */
 enum {
 	CD_GAME_MATCH_SETUP = CD_GAME_DEFINE_SIG,
+	CD_GAME_MATCH_THROW,
+	CD_GAME_MATCH_TURN_END,
 };
 
 /*****************************************************************************/
@@ -185,6 +198,9 @@ enum {
 /* define signal */
 enum {
 	CD_GAME_CAT_SETUP = CD_GAME_DEFINE_SIG,
+	CD_GAME_CAT_AIM_UP,
+	CD_GAME_CAT_AIM_DOWN,
+	CD_GAME_CAT_HIT,
 };
 
 /*****************************************************************************/
@@ -195,6 +211,9 @@ enum {
 /* define signal */
 enum {
 	CD_GAME_DOG_SETUP = CD_GAME_DEFINE_SIG,
+	CD_GAME_DOG_AIM_UP,
+	CD_GAME_DOG_AIM_DOWN,
+	CD_GAME_DOG_HIT,
 };
 
 /*****************************************************************************/
@@ -215,6 +234,32 @@ enum {
 /* define signal */
 enum {
 	CD_GAME_WIND_SETUP = CD_GAME_DEFINE_SIG,
+	CD_GAME_WIND_CHANGE,
+};
+
+/*****************************************************************************/
+/*  Cat dog fight game 'POWER' task define
+ */
+/*****************************************************************************/
+/* define timer */
+/* define signal */
+enum {
+	CD_GAME_POWER_SETUP = CD_GAME_DEFINE_SIG,
+	CD_GAME_POWER_CHARGE,
+	CD_GAME_POWER_RUN,
+	CD_GAME_POWER_RELEASE,
+};
+
+/*****************************************************************************/
+/*  Cat dog fight game 'MISSILE' task define
+ */
+/*****************************************************************************/
+/* define timer */
+/* define signal */
+enum {
+	CD_GAME_MISSILE_SETUP = CD_GAME_DEFINE_SIG,
+	CD_GAME_MISSILE_THROW,
+	CD_GAME_MISSILE_RUN,
 };
 
 /*****************************************************************************/

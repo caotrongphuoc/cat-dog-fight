@@ -28,11 +28,15 @@
 // Health at the start of a match
 #define CAT_HP_MAX (100)
 
+// Where the missile leaves the cat, relative to its bitmap
+#define CAT_HAND_OFFSET_Y (4)
+
 typedef struct
 {
 	uint8_t x;
 	uint8_t y;
 	uint8_t hp;
+	uint8_t angle;
 } cd_game_cat_t;
 
 extern cd_game_cat_t cat;
