@@ -44,6 +44,12 @@
 #include "flash.h"
 #include "buzzer.h"
 
+#if defined (IF_NETWORK_NRF24_EN)
+#include "hal_nrf.h"
+#include "nrf_config.h"
+#include "nrf_data.h"
+#endif
+
 /*****************************************************************************/
 /*  local declare
  */
@@ -81,6 +87,7 @@ int32_t shell_fwu(uint8_t* argv);
 int32_t shell_psv(uint8_t* argv);
 int32_t shell_buzzer(uint8_t* argv);
 int32_t shell_btn(uint8_t* argv);
+int32_t shell_rf(uint8_t* argv);
 
 /*****************************************************************************/
 /*  command table
@@ -113,6 +120,7 @@ const cmd_line_t lgn_cmd_table[] = {
 	/*************************************************************************/
 	{(const int8_t*)"dbg",		shell_dbg,			(const int8_t*)"dbg"},
 	{(const int8_t*)"btn",		shell_btn,			(const int8_t*)"simulate button press"},
+	{(const int8_t*)"rf",		shell_rf,			(const int8_t*)"rf24 status"},
 
 	/* End Of Table */
 	{(const int8_t*)0,(pf_cmd_func)0,(const int8_t*)0}
@@ -990,5 +998,31 @@ int32_t shell_btn(uint8_t* argv) {
 	}
 
 	LOGIN_PRINT("btn %c %d\n", *str_parser_get_attr(1), hold_ms);
+	return 0;
+}
+
+/* rf s : print rf24 address and read back nrf24l01 registers */
+int32_t shell_rf(uint8_t* argv) {
+#if defined (IF_NETWORK_NRF24_EN)
+	switch (*(argv + 3)) {
+	case 's': {
+		uint8_t* phy_addr __attribute__((unused)) = nrf_get_src_phy_addr();
+		LOGIN_PRINT("me: %d phy addr: %02X %02X %02X %02X %02X\n", IF_TYPE_RF24_ME, phy_addr[0], phy_addr[1], phy_addr[2], phy_addr[3], phy_addr[4]);
+		LOGIN_PRINT("channel: %d (cfg %d)\n", hal_nrf_get_rf_channel(), NRF_PHY_CHANEL_CFG);
+		LOGIN_PRINT("op mode: %s\n", hal_nrf_get_operation_mode() == HAL_NRF_PRX ? "PRX" : "PTX");
+		LOGIN_PRINT("power: %s\n", hal_nrf_get_power_mode() == HAL_NRF_PWR_UP ? "UP" : "DOWN");
+		LOGIN_PRINT("addr width: %d\n", hal_nrf_get_address_width());
+		LOGIN_PRINT("observe tx: 0x%02X\n", hal_nrf_get_auto_retr_status());
+	}
+		break;
+
+	default:
+		LOGIN_PRINT("usage: rf s\n");
+		break;
+	}
+#else
+	(void)argv;
+	LOGIN_PRINT("rf24 disabled\n");
+#endif
 	return 0;
 }
