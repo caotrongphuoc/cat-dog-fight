@@ -1001,7 +1001,8 @@ int32_t shell_btn(uint8_t* argv) {
 	return 0;
 }
 
-/* rf s : print rf24 address and read back nrf24l01 registers */
+/* rf s : print rf24 address and read back nrf24l01 registers
+ * rf p : send a ping to the rival board, the reply prints the round trip */
 int32_t shell_rf(uint8_t* argv) {
 #if defined (IF_NETWORK_NRF24_EN)
 	switch (*(argv + 3)) {
@@ -1016,8 +1017,13 @@ int32_t shell_rf(uint8_t* argv) {
 	}
 		break;
 
+	case 'p': {
+		task_post_pure_msg(AC_TASK_DBG_ID, AC_DBG_RF24_PING_REQ);
+	}
+		break;
+
 	default:
-		LOGIN_PRINT("usage: rf s\n");
+		LOGIN_PRINT("usage: rf s|p\n");
 		break;
 	}
 #else

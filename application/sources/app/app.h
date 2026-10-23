@@ -175,6 +175,9 @@ enum {
 /* define signal */
 enum {
 	AC_DBG_TEST_1 = AK_USER_DEFINE_SIG,
+	AC_DBG_RF24_PING_REQ,
+	AC_DBG_RF24_PING,
+	AC_DBG_RF24_PONG,
 };
 
 /*****************************************************************************/
