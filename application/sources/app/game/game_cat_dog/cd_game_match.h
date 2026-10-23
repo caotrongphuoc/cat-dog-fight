@@ -56,6 +56,20 @@ enum
 	MATCH_TURN_DOG,
 };
 
+// Who plays the other animal: the computer on this board, or the rival board over RF24
+enum
+{
+	MATCH_MODE_CPU = 0,
+	MATCH_MODE_RF,
+};
+
+// Computer level, saved in the EEPROM record
+enum
+{
+	MATCH_LEVEL_EASY = 0,
+	MATCH_LEVEL_HARD,
+};
+
 // Phases of a turn: aim and charge, then the missile flies
 enum
 {
@@ -65,6 +79,7 @@ enum
 
 typedef struct
 {
+	uint8_t mode;
 	uint8_t state;
 	uint8_t turn;
 	uint8_t phase;

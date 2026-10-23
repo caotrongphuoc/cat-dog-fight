@@ -19,6 +19,7 @@
 
 typedef struct {
 	uint8_t silent;		/* 1: buzzer muted */
+	uint8_t level;		/* computer level, 0: easy, 1: hard */
 	uint16_t cat_wins;
 	uint16_t dog_wins;
 } __attribute__((packed)) cd_game_record_t;

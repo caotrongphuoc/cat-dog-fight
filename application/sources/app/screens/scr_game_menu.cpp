@@ -7,7 +7,9 @@
 static uint8_t menu_item;
 
 static const char* const menu_item_name[MENU_ITEM_NUMBER] = {
-    "<< Play >>",
+    "<< 1 Player >>",
+    "<<2 Players>>",
+    "<<Level:EASY>>",
     "<<Sound: ON>>",
     "<< Exit >>",
 };
@@ -56,6 +58,10 @@ void view_scr_game_menu()
 	{
 		item = "<<Sound:OFF>>";
 	}
+	if (menu_item == MENU_ITEM_LEVEL && match.record.level == MATCH_LEVEL_HARD)
+	{
+		item = "<<Level:HARD>>";
+	}
 	view_render.setCursor((LCD_WIDTH - strlen(item) * (X_SIZE_FONT + 1)) / 2, MENU_ITEM_AXIS_Y);
 	view_render.print(item);
 	view_render.setCursor(MENU_ROLE_AXIS_X, MENU_ROLE_AXIS_Y);
@@ -84,7 +90,7 @@ void scr_game_menu_handle(ak_msg_t* msg)
 	case SCREEN_ENTRY:
 	{
 		APP_DBG_SIG("SCREEN_ENTRY\n");
-		menu_item = MENU_ITEM_PLAY;
+		menu_item = MENU_ITEM_ONE_PLAYER;
 	}
 	break;
 
@@ -108,9 +114,16 @@ void scr_game_menu_handle(ak_msg_t* msg)
 	{
 		APP_DBG_SIG("AC_DISPLAY_BUTTON_MODE_PRESSED\n");
 		BUZZER_PlaySound(BUZZER_SOUND_CLICK);
-		if (menu_item == MENU_ITEM_PLAY)
+		if (menu_item == MENU_ITEM_ONE_PLAYER || menu_item == MENU_ITEM_TWO_PLAYERS)
 		{
+			uint8_t mode = (menu_item == MENU_ITEM_ONE_PLAYER) ? MATCH_MODE_CPU : MATCH_MODE_RF;
+			task_post_common_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_MODE_SET, &mode, sizeof(mode));
 			SCREEN_TRAN(scr_game_cat_dog_handle, &scr_game_cat_dog);
+		}
+		else if (menu_item == MENU_ITEM_LEVEL)
+		{
+			task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_LEVEL_TOGGLE);
+			task_post_pure_msg(AC_TASK_DISPLAY_ID, AC_DISPLAY_RENDER_SCREEN);
 		}
 		else if (menu_item == MENU_ITEM_SOUND)
 		{

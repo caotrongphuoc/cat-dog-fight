@@ -191,6 +191,8 @@ enum {
 	CD_GAME_MATCH_SETUP = CD_GAME_DEFINE_SIG,
 	CD_GAME_MATCH_RECORD_LOAD,
 	CD_GAME_MATCH_SOUND_TOGGLE,
+	CD_GAME_MATCH_LEVEL_TOGGLE,
+	CD_GAME_MATCH_MODE_SET,
 	CD_GAME_MATCH_START,
 	CD_GAME_MATCH_THROW,
 	CD_GAME_MATCH_TURN_END,
@@ -301,6 +303,19 @@ enum {
 	CD_GAME_LINK_RX_RESULT,
 	CD_GAME_LINK_RX_PING,
 	CD_GAME_LINK_RX_ACK,
+};
+
+/*****************************************************************************/
+/*  Cat dog fight game 'CPU' task define
+ */
+/*****************************************************************************/
+/* define timer */
+#define CD_GAME_CPU_THINK_INTERVAL									(800)
+/* define signal */
+enum {
+	CD_GAME_CPU_PLAY = CD_GAME_DEFINE_SIG,
+	CD_GAME_CPU_THINK,
+	CD_GAME_CPU_RESET,
 };
 
 /*****************************************************************************/

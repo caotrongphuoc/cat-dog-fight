@@ -36,6 +36,7 @@ enum {
 	CD_GAME_POWER_ID,
 	CD_GAME_MISSILE_ID,
 	CD_GAME_LINK_ID,
+	CD_GAME_CPU_ID,
 
 	/* NRF24 NETWORKS */
 #if defined (IF_NETWORK_NRF24_EN)
@@ -92,6 +93,7 @@ extern void cd_game_wind_handle(ak_msg_t*);
 extern void cd_game_power_handle(ak_msg_t*);
 extern void cd_game_missile_handle(ak_msg_t*);
 extern void cd_game_link_handle(ak_msg_t*);
+extern void cd_game_cpu_handle(ak_msg_t*);
 
 /* RF24 NETWORK TASK */
 extern void task_rf24_phy(ak_msg_t*);

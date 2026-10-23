@@ -34,7 +34,9 @@ extern void scr_game_menu_handle(ak_msg_t* msg);
 // Menu entries, in the order UP / DOWN walks them
 enum
 {
-	MENU_ITEM_PLAY = 0,
+	MENU_ITEM_ONE_PLAYER = 0,
+	MENU_ITEM_TWO_PLAYERS,
+	MENU_ITEM_LEVEL,
 	MENU_ITEM_SOUND,
 	MENU_ITEM_EXIT,
 	MENU_ITEM_NUMBER,

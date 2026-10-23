@@ -12,6 +12,21 @@ static void cd_game_match_apply_sound()
 #endif
 }
 
+// This board decides how a turn ends: every turn against the computer, only its own over RF24
+static bool cd_game_match_is_local(uint8_t turn)
+{
+	return (match.mode == MATCH_MODE_CPU) || (turn == CD_GAME_BOARD_ME);
+}
+
+// Hand the turn to the computer when it plays the other animal
+static void cd_game_match_cpu_turn()
+{
+	if (match.mode == MATCH_MODE_CPU && match.turn != CD_GAME_BOARD_ME)
+	{
+		task_post_pure_msg(CD_GAME_CPU_ID, CD_GAME_CPU_PLAY);
+	}
+}
+
 // Next turn, or game over when a player has no HP left
 static void cd_game_match_next_turn(uint8_t cat_hp, uint8_t dog_hp)
 {
@@ -38,6 +53,7 @@ static void cd_game_match_next_turn(uint8_t cat_hp, uint8_t dog_hp)
 	match.phase = MATCH_PHASE_AIM;
 	task_post_pure_msg(CD_GAME_POWER_ID, CD_GAME_POWER_SETUP);
 	task_post_pure_msg(AC_TASK_DISPLAY_ID, AC_DISPLAY_RENDER_SCREEN);
+	cd_game_match_cpu_turn();
 }
 
 // Rival turn ends once its result is in, the thrower's HP and wind win over the local copy
@@ -71,6 +87,29 @@ void cd_game_match_handle(ak_msg_t* msg)
 	}
 	break;
 
+	case CD_GAME_MATCH_LEVEL_TOGGLE:
+	{
+		APP_DBG_SIG("CD_GAME_MATCH_LEVEL_TOGGLE\n");
+		match.record.level = (match.record.level == MATCH_LEVEL_EASY) ? MATCH_LEVEL_HARD : MATCH_LEVEL_EASY;
+		cd_game_record_write(&match.record);
+	}
+	break;
+
+	case CD_GAME_MATCH_MODE_SET:
+	{
+		APP_DBG_SIG("CD_GAME_MATCH_MODE_SET\n");
+		if (get_data_len_common_msg(msg) != sizeof(uint8_t))
+		{
+			break;
+		}
+		uint8_t mode = *get_data_common_msg(msg);
+		if (mode == MATCH_MODE_CPU || mode == MATCH_MODE_RF)
+		{
+			match.mode = mode;
+		}
+	}
+	break;
+
 	case CD_GAME_MATCH_SETUP:
 	{
 		APP_DBG_SIG("CD_GAME_MATCH_SETUP\n");
@@ -80,6 +119,16 @@ void cd_game_match_handle(ak_msg_t* msg)
 		match.winner = MATCH_TURN_CAT;
 		match.rival_landed = false;
 		match.rival_result = false;
+		if (match.mode == MATCH_MODE_RF)
+		{
+			task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_SETUP);
+			break;
+		}
+		// Against the computer the match starts right away
+		match.state = MATCH_STATE_PLAY;
+		BUZZER_PlaySound(BUZZER_SOUND_LETS_GO);
+		task_post_pure_msg(AC_TASK_DISPLAY_ID, AC_DISPLAY_RENDER_SCREEN);
+		cd_game_match_cpu_turn();
 	}
 	break;
 
@@ -106,7 +155,7 @@ void cd_game_match_handle(ak_msg_t* msg)
 		BUZZER_PlaySound(BUZZER_SOUND_CLICK);
 		task_post_pure_msg(CD_GAME_MISSILE_ID, CD_GAME_MISSILE_THROW);
 		task_post_pure_msg(AC_TASK_DISPLAY_ID, CD_GAME_ANIMATE);
-		if (match.turn == CD_GAME_BOARD_ME)
+		if (match.mode == MATCH_MODE_RF && match.turn == CD_GAME_BOARD_ME)
 		{
 			task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_SEND_THROW);
 		}
@@ -120,7 +169,7 @@ void cd_game_match_handle(ak_msg_t* msg)
 		{
 			break;
 		}
-		if (match.turn != CD_GAME_BOARD_ME)
+		if (!cd_game_match_is_local(match.turn))
 		{
 			match.rival_landed = true;
 			if (match.rival_result)
@@ -129,12 +178,15 @@ void cd_game_match_handle(ak_msg_t* msg)
 			}
 			break;
 		}
-		// This board threw: it picks the next wind and tells the rival how the throw ended
+		// This board decides: it picks the next wind and tells the rival board how the throw ended
 		if (cat.hp != 0 && dog.hp != 0)
 		{
 			task_post_pure_msg(CD_GAME_WIND_ID, CD_GAME_WIND_CHANGE);
 		}
-		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_SEND_RESULT);
+		if (match.mode == MATCH_MODE_RF)
+		{
+			task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_SEND_RESULT);
+		}
 		cd_game_match_next_turn(cat.hp, dog.hp);
 	}
 	break;

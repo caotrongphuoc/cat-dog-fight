@@ -29,6 +29,7 @@
 #include "cd_game_power.h"
 #include "cd_game_missile.h"
 #include "cd_game_link.h"
+#include "cd_game_cpu.h"
 
 extern view_dynamic_t dyn_view_game_cat_dog;
 extern view_screen_t scr_game_cat_dog;

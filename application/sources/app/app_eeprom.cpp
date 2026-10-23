@@ -33,6 +33,7 @@ bool cd_game_record_read(cd_game_record_t* data) {
 
 	/* first boot or broken record: sound on, no wins */
 	data->silent = 0;
+	data->level = 0;
 	data->cat_wins = 0;
 	data->dog_wins = 0;
 	return false;

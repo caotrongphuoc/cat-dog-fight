@@ -106,7 +106,7 @@ static void cd_game_power_display()
 
 static void cd_game_aim_display()
 {
-	if (match.state != MATCH_STATE_PLAY || match.phase != MATCH_PHASE_AIM || match.turn != CD_GAME_BOARD_ME)
+	if (match.state != MATCH_STATE_PLAY || match.phase != MATCH_PHASE_AIM || (match.turn != CD_GAME_BOARD_ME && match.mode != MATCH_MODE_CPU))
 	{
 		return;
 	}
@@ -213,7 +213,6 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 		task_post_pure_msg(CD_GAME_WIND_ID, CD_GAME_WIND_SETUP);
 		task_post_pure_msg(CD_GAME_POWER_ID, CD_GAME_POWER_SETUP);
 		task_post_pure_msg(CD_GAME_MISSILE_ID, CD_GAME_MISSILE_SETUP);
-		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_SETUP);
 		timer_remove_attr(AC_TASK_DISPLAY_ID, AC_DISPLAY_SHOW_IDLE);
 	}
 	break;
@@ -244,6 +243,7 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 		APP_DBG_SIG("CD_GAME_EXIT_GAME\n");
 		timer_remove_attr(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK);
 		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RESET);
+		task_post_pure_msg(CD_GAME_CPU_ID, CD_GAME_CPU_RESET);
 		task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_RESET);
 		if (match.state == MATCH_STATE_LOST)
 		{
@@ -284,6 +284,8 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 			// Give up waiting for the rival board
 			timer_remove_attr(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK);
 			task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RESET);
+			task_post_pure_msg(CD_GAME_CPU_ID, CD_GAME_CPU_RESET);
+			task_post_pure_msg(CD_GAME_CPU_ID, CD_GAME_CPU_RESET);
 			task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_RESET);
 			SCREEN_TRAN(scr_game_menu_handle, &scr_game_menu);
 			break;

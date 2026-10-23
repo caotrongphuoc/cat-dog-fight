@@ -37,6 +37,9 @@
 // Horizontal acceleration added per unit of wind speed every tick
 #define MISSILE_WIND_FORCE (4)
 
+// Longest flight simulated by cd_game_missile_predict(), far above a real flight
+#define MISSILE_PREDICT_TICKS_MAX (200)
+
 // Size of fish bitmap, thrown by the cat
 #define MISSILE_FISH_SIZE_BITMAP_X (8)
 #define MISSILE_FISH_SIZE_BITMAP_Y (5)
@@ -84,5 +87,6 @@ extern cd_game_missile_t missile;
 
 extern int16_t cd_game_missile_cos(uint8_t angle);
 extern int16_t cd_game_missile_sin(uint8_t angle);
+extern uint8_t cd_game_missile_predict(uint8_t thrower, uint8_t angle, uint8_t power_value, int8_t wind_speed);
 
 #endif //__CD_GAME_MISSILE_H__

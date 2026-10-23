@@ -20,43 +20,40 @@ static bool cd_game_missile_overlap(int16_t x, int16_t y, uint8_t w, uint8_t h, 
 	return (x < rx + rw) && (rx < x + w) && (y < ry + rh) && (ry < y + h);
 }
 
-static void cd_game_missile_throw()
+static void cd_game_missile_launch(cd_game_missile_t* m, uint8_t thrower, uint8_t angle, uint8_t power_value)
 {
-	uint8_t angle;
-	int32_t speed = MISSILE_SPEED_MIN + (int32_t)(MISSILE_SPEED_MAX - MISSILE_SPEED_MIN) * power.value / POWER_VALUE_MAX;
+	int32_t speed = MISSILE_SPEED_MIN + (int32_t)(MISSILE_SPEED_MAX - MISSILE_SPEED_MIN) * power_value / POWER_VALUE_MAX;
 
-	if (match.turn == MATCH_TURN_CAT)
+	if (thrower == MATCH_TURN_CAT)
 	{
-		angle = cat.angle;
-		missile.type = MISSILE_TYPE_FISH;
-		missile.x = (int32_t)(cat.x + CAT_SIZE_BITMAP_X) << MISSILE_FIXED_SHIFT;
-		missile.y = (int32_t)(cat.y + CAT_HAND_OFFSET_Y) << MISSILE_FIXED_SHIFT;
-		missile.vx = (speed * cd_game_missile_cos(angle)) >> MISSILE_FIXED_SHIFT;
+		m->type = MISSILE_TYPE_FISH;
+		m->x = (int32_t)(cat.x + CAT_SIZE_BITMAP_X) << MISSILE_FIXED_SHIFT;
+		m->y = (int32_t)(cat.y + CAT_HAND_OFFSET_Y) << MISSILE_FIXED_SHIFT;
+		m->vx = (speed * cd_game_missile_cos(angle)) >> MISSILE_FIXED_SHIFT;
 	}
 	else
 	{
-		angle = dog.angle;
-		missile.type = MISSILE_TYPE_BONE;
-		missile.x = (int32_t)(dog.x - MISSILE_BONE_SIZE_BITMAP_X) << MISSILE_FIXED_SHIFT;
-		missile.y = (int32_t)(dog.y + DOG_HAND_OFFSET_Y) << MISSILE_FIXED_SHIFT;
-		missile.vx = -((speed * cd_game_missile_cos(angle)) >> MISSILE_FIXED_SHIFT);
+		m->type = MISSILE_TYPE_BONE;
+		m->x = (int32_t)(dog.x - MISSILE_BONE_SIZE_BITMAP_X) << MISSILE_FIXED_SHIFT;
+		m->y = (int32_t)(dog.y + DOG_HAND_OFFSET_Y) << MISSILE_FIXED_SHIFT;
+		m->vx = -((speed * cd_game_missile_cos(angle)) >> MISSILE_FIXED_SHIFT);
 	}
-	missile.vy = -((speed * cd_game_missile_sin(angle)) >> MISSILE_FIXED_SHIFT);
-	missile.state = MISSILE_STATE_FLY;
-	missile.result = MISSILE_RESULT_NONE;
+	m->vy = -((speed * cd_game_missile_sin(angle)) >> MISSILE_FIXED_SHIFT);
+	m->state = MISSILE_STATE_FLY;
+	m->result = MISSILE_RESULT_NONE;
 }
 
-static uint8_t cd_game_missile_check(int16_t x, int16_t y, uint8_t w, uint8_t h)
+static uint8_t cd_game_missile_check(uint8_t type, int16_t x, int16_t y, uint8_t w, uint8_t h)
 {
 	if (cd_game_missile_overlap(x, y, w, h, border.x, border.y, border.width, border.height))
 	{
 		return MISSILE_RESULT_HIT_BORDER;
 	}
-	if (missile.type == MISSILE_TYPE_FISH && cd_game_missile_overlap(x, y, w, h, dog.x, dog.y, DOG_SIZE_BITMAP_X, DOG_SIZE_BITMAP_Y))
+	if (type == MISSILE_TYPE_FISH && cd_game_missile_overlap(x, y, w, h, dog.x, dog.y, DOG_SIZE_BITMAP_X, DOG_SIZE_BITMAP_Y))
 	{
 		return MISSILE_RESULT_HIT_DOG;
 	}
-	if (missile.type == MISSILE_TYPE_BONE && cd_game_missile_overlap(x, y, w, h, cat.x, cat.y, CAT_SIZE_BITMAP_X, CAT_SIZE_BITMAP_Y))
+	if (type == MISSILE_TYPE_BONE && cd_game_missile_overlap(x, y, w, h, cat.x, cat.y, CAT_SIZE_BITMAP_X, CAT_SIZE_BITMAP_Y))
 	{
 		return MISSILE_RESULT_HIT_CAT;
 	}
@@ -65,6 +62,35 @@ static uint8_t cd_game_missile_check(int16_t x, int16_t y, uint8_t w, uint8_t h)
 		return MISSILE_RESULT_MISS;
 	}
 	return MISSILE_RESULT_NONE;
+}
+
+// One tick of flight, returns how it ended or MISSILE_RESULT_NONE while still flying
+static uint8_t cd_game_missile_step(cd_game_missile_t* m, int8_t wind_speed)
+{
+	m->vx += wind_speed * MISSILE_WIND_FORCE;
+	m->vy += MISSILE_GRAVITY;
+	m->x += m->vx;
+	m->y += m->vy;
+
+	bool fish = (m->type == MISSILE_TYPE_FISH);
+	uint8_t w = fish ? MISSILE_FISH_SIZE_BITMAP_X : MISSILE_BONE_SIZE_BITMAP_X;
+	uint8_t h = fish ? MISSILE_FISH_SIZE_BITMAP_Y : MISSILE_BONE_SIZE_BITMAP_Y;
+	return cd_game_missile_check(m->type, m->x >> MISSILE_FIXED_SHIFT, m->y >> MISSILE_FIXED_SHIFT, w, h);
+}
+
+uint8_t cd_game_missile_predict(uint8_t thrower, uint8_t angle, uint8_t power_value, int8_t wind_speed)
+{
+	cd_game_missile_t m;
+	cd_game_missile_launch(&m, thrower, angle, power_value);
+	for (uint16_t tick = 0; tick < MISSILE_PREDICT_TICKS_MAX; tick++)
+	{
+		uint8_t result = cd_game_missile_step(&m, wind_speed);
+		if (result != MISSILE_RESULT_NONE)
+		{
+			return result;
+		}
+	}
+	return MISSILE_RESULT_MISS;
 }
 
 void cd_game_missile_handle(ak_msg_t* msg)
@@ -82,7 +108,7 @@ void cd_game_missile_handle(ak_msg_t* msg)
 	case CD_GAME_MISSILE_THROW:
 	{
 		APP_DBG_SIG("CD_GAME_MISSILE_THROW\n");
-		cd_game_missile_throw();
+		cd_game_missile_launch(&missile, match.turn, (match.turn == MATCH_TURN_CAT) ? cat.angle : dog.angle, power.value);
 	}
 	break;
 
@@ -92,15 +118,7 @@ void cd_game_missile_handle(ak_msg_t* msg)
 		{
 			break;
 		}
-		missile.vx += wind.speed * MISSILE_WIND_FORCE;
-		missile.vy += MISSILE_GRAVITY;
-		missile.x += missile.vx;
-		missile.y += missile.vy;
-
-		bool fish = (missile.type == MISSILE_TYPE_FISH);
-		uint8_t w = fish ? MISSILE_FISH_SIZE_BITMAP_X : MISSILE_BONE_SIZE_BITMAP_X;
-		uint8_t h = fish ? MISSILE_FISH_SIZE_BITMAP_Y : MISSILE_BONE_SIZE_BITMAP_Y;
-		missile.result = cd_game_missile_check(missile.x >> MISSILE_FIXED_SHIFT, missile.y >> MISSILE_FIXED_SHIFT, w, h);
+		missile.result = cd_game_missile_step(&missile, wind.speed);
 		if (missile.result == MISSILE_RESULT_NONE)
 		{
 			break;
