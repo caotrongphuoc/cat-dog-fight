@@ -65,6 +65,28 @@ static void cd_game_border_display()
 	{
 		view_render.drawFastHLine(border.x, y, border.width, WHITE);
 	}
+	if (border.hit_ticks > 0)
+	{
+		const unsigned char* dust = (border.hit_ticks % 2) ? bitmap_dust_I : bitmap_dust_II;
+		view_render.fillRect(border.hit_x, border.hit_y, BORDER_DUST_SIZE_BITMAP_X, BORDER_DUST_SIZE_BITMAP_Y, BLACK);
+		view_render.drawBitmap(border.hit_x, border.hit_y, dust, BORDER_DUST_SIZE_BITMAP_X, BORDER_DUST_SIZE_BITMAP_Y, WHITE);
+	}
+}
+
+// Shake and blink while hit, with a star over the head
+static void cd_game_player_display(int16_t x, int16_t y, uint8_t w, uint8_t h, const unsigned char* bitmap, uint8_t hit_ticks, uint8_t shake)
+{
+	if (hit_ticks == 0)
+	{
+		view_render.drawBitmap(x, y, bitmap, w, h, WHITE);
+		return;
+	}
+	int16_t dx = (hit_ticks % 2) ? shake : -shake;
+	if ((hit_ticks / 2) % 2 == 0)
+	{
+		view_render.drawBitmap(x + dx, y, bitmap, w, h, WHITE);
+	}
+	view_render.drawBitmap(x + (w - CD_GAME_HUD_STAR_SIZE_BITMAP_X) / 2, y - CD_GAME_HUD_STAR_SIZE_BITMAP_Y - CD_GAME_HUD_STAR_GAP, bitmap_star, CD_GAME_HUD_STAR_SIZE_BITMAP_X, CD_GAME_HUD_STAR_SIZE_BITMAP_Y, WHITE);
 }
 
 static void cd_game_power_display()
@@ -120,8 +142,8 @@ void view_scr_game_cat_dog()
 	cd_game_hud_display();
 	cd_game_wind_display();
 	cd_game_border_display();
-	view_render.drawBitmap(cat.x, cat.y, bitmap_cat, CAT_SIZE_BITMAP_X, CAT_SIZE_BITMAP_Y, WHITE);
-	view_render.drawBitmap(dog.x, dog.y, bitmap_dog, DOG_SIZE_BITMAP_X, DOG_SIZE_BITMAP_Y, WHITE);
+	cd_game_player_display(cat.x, cat.y, CAT_SIZE_BITMAP_X, CAT_SIZE_BITMAP_Y, bitmap_cat, cat.hit_ticks, CAT_HIT_SHAKE);
+	cd_game_player_display(dog.x, dog.y, DOG_SIZE_BITMAP_X, DOG_SIZE_BITMAP_Y, bitmap_dog, dog.hit_ticks, DOG_HIT_SHAKE);
 	view_render.drawFastHLine(0, CD_GAME_GROUND_AXIS_Y, LCD_WIDTH, WHITE);
 	cd_game_power_display();
 	cd_game_aim_display();
@@ -172,6 +194,18 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 	{
 		task_post_pure_msg(CD_GAME_POWER_ID, CD_GAME_POWER_RUN);
 		task_post_pure_msg(CD_GAME_MISSILE_ID, CD_GAME_MISSILE_RUN);
+		task_post_pure_msg(CD_GAME_CAT_ID, CD_GAME_CAT_RUN);
+		task_post_pure_msg(CD_GAME_DOG_ID, CD_GAME_DOG_RUN);
+		task_post_pure_msg(CD_GAME_BORDER_ID, CD_GAME_BORDER_RUN);
+	}
+	break;
+
+	case CD_GAME_EXIT_GAME:
+	{
+		APP_DBG_SIG("CD_GAME_EXIT_GAME\n");
+		timer_remove_attr(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK);
+		task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_RESET);
+		SCREEN_TRAN(scr_game_over_handle, &scr_game_over);
 	}
 	break;
 

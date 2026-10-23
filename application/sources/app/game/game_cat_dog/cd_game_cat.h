@@ -31,12 +31,17 @@
 // Where the missile leaves the cat, relative to its bitmap
 #define CAT_HAND_OFFSET_Y (4)
 
+// Hit effect: ticks it lasts and shake in pixels
+#define CAT_HIT_TICKS (12)
+#define CAT_HIT_SHAKE (1)
+
 typedef struct
 {
 	uint8_t x;
 	uint8_t y;
 	uint8_t hp;
 	uint8_t angle;
+	uint8_t hit_ticks;
 } cd_game_cat_t;
 
 extern cd_game_cat_t cat;

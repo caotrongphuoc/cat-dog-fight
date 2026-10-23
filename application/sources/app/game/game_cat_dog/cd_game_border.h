@@ -16,6 +16,7 @@
 #include "view_render.h"
 
 #include "cd_game_match.h"
+#include "cd_game_missile.h"
 
 // Size of the wall in the middle of the field
 #define BORDER_WIDTH (6)
@@ -28,12 +29,20 @@
 // Height of one brick row drawn on the wall
 #define BORDER_BRICK_HEIGHT (4)
 
+// Dust effect where a missile hits the wall: ticks it lasts, size of the dust bitmap
+#define BORDER_HIT_TICKS (10)
+#define BORDER_DUST_SIZE_BITMAP_X (7)
+#define BORDER_DUST_SIZE_BITMAP_Y (5)
+
 typedef struct
 {
 	uint8_t x;
 	uint8_t y;
 	uint8_t width;
 	uint8_t height;
+	int16_t hit_x;
+	int16_t hit_y;
+	uint8_t hit_ticks;
 } cd_game_border_t;
 
 extern cd_game_border_t border;

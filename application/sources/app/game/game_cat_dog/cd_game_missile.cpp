@@ -115,6 +115,10 @@ void cd_game_missile_handle(ak_msg_t* msg)
 		{
 			task_post_pure_msg(CD_GAME_DOG_ID, CD_GAME_DOG_HIT);
 		}
+		else if (missile.result == MISSILE_RESULT_HIT_BORDER)
+		{
+			task_post_pure_msg(CD_GAME_BORDER_ID, CD_GAME_BORDER_HIT);
+		}
 		task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_TURN_END);
 	}
 	break;

@@ -57,6 +57,11 @@ extern void scr_game_cat_dog_handle(ak_msg_t* msg);
 // Aim line drawn from the hand of the player whose turn it is
 #define CD_GAME_HUD_AIM_LENGTH (10)
 
+// Size of the star drawn over a player who was just hit
+#define CD_GAME_HUD_STAR_SIZE_BITMAP_X (7)
+#define CD_GAME_HUD_STAR_SIZE_BITMAP_Y (7)
+#define CD_GAME_HUD_STAR_GAP (2)
+
 // Wind strength printed under the arrow
 #define CD_GAME_HUD_WIND_TEXT_AXIS_X (CD_GAME_HUD_WIND_AXIS_X - 2)
 #define CD_GAME_HUD_WIND_TEXT_AXIS_Y (CD_GAME_HUD_WIND_AXIS_Y + CD_GAME_HUD_WIND_HEAD + 3)

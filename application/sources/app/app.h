@@ -173,9 +173,11 @@ enum {
 /*****************************************************************************/
 /* define timer */
 #define CD_GAME_TIME_TICK_INTERVAL									(50)
+#define CD_GAME_TIME_EXIT_INTERVAL									(2000)
 /* define signal */
 enum {
 	CD_GAME_TIME_TICK = CD_GAME_DEFINE_SIG,
+	CD_GAME_EXIT_GAME,
 };
 
 /*****************************************************************************/
@@ -188,6 +190,7 @@ enum {
 	CD_GAME_MATCH_SETUP = CD_GAME_DEFINE_SIG,
 	CD_GAME_MATCH_THROW,
 	CD_GAME_MATCH_TURN_END,
+	CD_GAME_MATCH_RESET,
 };
 
 /*****************************************************************************/
@@ -201,6 +204,7 @@ enum {
 	CD_GAME_CAT_AIM_UP,
 	CD_GAME_CAT_AIM_DOWN,
 	CD_GAME_CAT_HIT,
+	CD_GAME_CAT_RUN,
 };
 
 /*****************************************************************************/
@@ -214,6 +218,7 @@ enum {
 	CD_GAME_DOG_AIM_UP,
 	CD_GAME_DOG_AIM_DOWN,
 	CD_GAME_DOG_HIT,
+	CD_GAME_DOG_RUN,
 };
 
 /*****************************************************************************/
@@ -224,6 +229,8 @@ enum {
 /* define signal */
 enum {
 	CD_GAME_BORDER_SETUP = CD_GAME_DEFINE_SIG,
+	CD_GAME_BORDER_HIT,
+	CD_GAME_BORDER_RUN,
 };
 
 /*****************************************************************************/

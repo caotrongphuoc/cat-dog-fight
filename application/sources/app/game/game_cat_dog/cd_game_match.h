@@ -13,6 +13,9 @@
 #include "task_list.h"
 #include "task_display.h"
 
+#include "cd_game_cat.h"
+#include "cd_game_dog.h"
+
 // Ground line, every object stands on it
 #define CD_GAME_GROUND_AXIS_Y (63)
 
@@ -59,6 +62,7 @@ typedef struct
 	uint8_t state;
 	uint8_t turn;
 	uint8_t phase;
+	uint8_t winner;
 } cd_game_match_t;
 
 extern cd_game_match_t match;

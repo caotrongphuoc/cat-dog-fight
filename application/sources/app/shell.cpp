@@ -405,11 +405,11 @@ int32_t shell_fatal(uint8_t* argv) {
 
 int32_t shell_stt(uint8_t* argv) {
 	(void)argv;
-	LOGIN_PRINT("match state:%d turn:%s phase:%d me:%s\n", match.state, match.turn == MATCH_TURN_CAT ? "cat" : "dog", match.phase, CD_GAME_BOARD_ME == MATCH_TURN_CAT ? "cat" : "dog");
+	LOGIN_PRINT("match state:%d turn:%s phase:%d winner:%s me:%s\n", match.state, match.turn == MATCH_TURN_CAT ? "cat" : "dog", match.phase, match.winner == MATCH_TURN_CAT ? "cat" : "dog", CD_GAME_BOARD_ME == MATCH_TURN_CAT ? "cat" : "dog");
 	LOGIN_PRINT("wind speed:%d\n", wind.speed);
-	LOGIN_PRINT("cat x:%d y:%d hp:%d angle:%d\n", cat.x, cat.y, cat.hp, cat.angle);
-	LOGIN_PRINT("dog x:%d y:%d hp:%d angle:%d\n", dog.x, dog.y, dog.hp, dog.angle);
-	LOGIN_PRINT("border x:%d y:%d w:%d h:%d\n", border.x, border.y, border.width, border.height);
+	LOGIN_PRINT("cat x:%d y:%d hp:%d angle:%d hit:%d\n", cat.x, cat.y, cat.hp, cat.angle, cat.hit_ticks);
+	LOGIN_PRINT("dog x:%d y:%d hp:%d angle:%d hit:%d\n", dog.x, dog.y, dog.hp, dog.angle, dog.hit_ticks);
+	LOGIN_PRINT("border x:%d y:%d w:%d h:%d hit:%d at %d,%d\n", border.x, border.y, border.width, border.height, border.hit_ticks, border.hit_x, border.hit_y);
 	LOGIN_PRINT("power state:%d value:%d\n", power.state, power.value);
 	LOGIN_PRINT("missile type:%d state:%d result:%d x:%d y:%d vx:%d vy:%d\n", missile.type, missile.state, missile.result, (int)(missile.x >> MISSILE_FIXED_SHIFT), (int)(missile.y >> MISSILE_FIXED_SHIFT), (int)missile.vx, (int)missile.vy);
 	return 0;

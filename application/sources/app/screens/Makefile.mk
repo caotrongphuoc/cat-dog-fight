@@ -9,3 +9,4 @@ SOURCES_CPP += sources/app/screens/scr_idle.cpp
 SOURCES_CPP += sources/app/screens/scr_startup.cpp
 SOURCES_CPP += sources/app/screens/scr_game_menu.cpp
 SOURCES_CPP += sources/app/screens/scr_game_cat_dog.cpp
+SOURCES_CPP += sources/app/screens/scr_game_over.cpp

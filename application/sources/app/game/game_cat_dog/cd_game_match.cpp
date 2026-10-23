@@ -12,6 +12,7 @@ void cd_game_match_handle(ak_msg_t* msg)
 		match.state = MATCH_STATE_PLAY;
 		match.turn = MATCH_TURN_CAT;
 		match.phase = MATCH_PHASE_AIM;
+		match.winner = MATCH_TURN_CAT;
 	}
 	break;
 
@@ -34,10 +35,25 @@ void cd_game_match_handle(ak_msg_t* msg)
 		{
 			break;
 		}
+		if (cat.hp == 0 || dog.hp == 0)
+		{
+			match.state = MATCH_STATE_OVER;
+			match.winner = (cat.hp == 0) ? MATCH_TURN_DOG : MATCH_TURN_CAT;
+			timer_set(AC_TASK_DISPLAY_ID, CD_GAME_EXIT_GAME, CD_GAME_TIME_EXIT_INTERVAL, TIMER_ONE_SHOT);
+			break;
+		}
 		match.turn = (match.turn == MATCH_TURN_CAT) ? MATCH_TURN_DOG : MATCH_TURN_CAT;
 		match.phase = MATCH_PHASE_AIM;
 		task_post_pure_msg(CD_GAME_POWER_ID, CD_GAME_POWER_SETUP);
 		task_post_pure_msg(CD_GAME_WIND_ID, CD_GAME_WIND_CHANGE);
+	}
+	break;
+
+	case CD_GAME_MATCH_RESET:
+	{
+		APP_DBG_SIG("CD_GAME_MATCH_RESET\n");
+		match.state = MATCH_STATE_OFF;
+		match.phase = MATCH_PHASE_AIM;
 	}
 	break;
 

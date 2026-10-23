@@ -13,6 +13,7 @@ void cd_game_cat_handle(ak_msg_t* msg)
 		cat.y = CAT_AXIS_Y;
 		cat.hp = CAT_HP_MAX;
 		cat.angle = CD_GAME_ANGLE_DEFAULT;
+		cat.hit_ticks = 0;
 	}
 	break;
 
@@ -40,6 +41,16 @@ void cd_game_cat_handle(ak_msg_t* msg)
 	{
 		APP_DBG_SIG("CD_GAME_CAT_HIT\n");
 		cat.hp = (cat.hp > CD_GAME_HIT_DAMAGE) ? (cat.hp - CD_GAME_HIT_DAMAGE) : 0;
+		cat.hit_ticks = CAT_HIT_TICKS;
+	}
+	break;
+
+	case CD_GAME_CAT_RUN:
+	{
+		if (cat.hit_ticks > 0)
+		{
+			cat.hit_ticks--;
+		}
 	}
 	break;
 

@@ -63,3 +63,32 @@ const unsigned char PROGMEM bitmap_bone [] = {
 	0xff, 0x80,
 	0xc1, 0x80,
 };
+
+// 'bitmap_star', 7x7 px
+const unsigned char PROGMEM bitmap_star [] = {
+	0x92,
+	0x54,
+	0x38,
+	0xfe,
+	0x38,
+	0x54,
+	0x92,
+};
+
+// 'bitmap_dust_I', 7x5 px
+const unsigned char PROGMEM bitmap_dust_I [] = {
+	0x28,
+	0x44,
+	0x92,
+	0x44,
+	0x28,
+};
+
+// 'bitmap_dust_II', 7x5 px
+const unsigned char PROGMEM bitmap_dust_II [] = {
+	0x92,
+	0x10,
+	0xc6,
+	0x10,
+	0x92,
+};
