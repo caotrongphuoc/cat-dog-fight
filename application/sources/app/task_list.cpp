@@ -28,6 +28,7 @@ const task_t app_task_table[] = {
 	{CD_GAME_WIND_ID			,	TASK_PRI_LEVEL_4	,	cd_game_wind_handle		},
 	{CD_GAME_POWER_ID			,	TASK_PRI_LEVEL_4	,	cd_game_power_handle	},
 	{CD_GAME_MISSILE_ID			,	TASK_PRI_LEVEL_4	,	cd_game_missile_handle	},
+	{CD_GAME_LINK_ID			,	TASK_PRI_LEVEL_4	,	cd_game_link_handle		},
 
 	/*************************************************************************/
 	/* RF24 NETWORK TASK */

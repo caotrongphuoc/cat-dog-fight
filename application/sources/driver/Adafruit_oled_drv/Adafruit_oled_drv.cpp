@@ -26,6 +26,7 @@ bool Adafruit_oled_drv::initialize() {
 		return false;
 	}
 	memset(m_pFramebuffer, 0, FBSIZE);	  // clear it.
+	m_rowChecksumValid = false;			  // first update() sends every row.
 
 	// write command to the screen registers.
 #if defined(SH1106_DRIVER_EN)
@@ -252,6 +253,13 @@ void Adafruit_oled_drv::update() {
 	writeCommand(SH1106_SET_START_LINE | 0x0);
 
 	for (byte page = 0; page < pageCount; page++) {
+		uint32_t checksum = rowChecksum(page);
+		if (m_rowChecksumValid && checksum == m_rowChecksum[page]) {
+			continue;
+		}
+		m_rowChecksum[page] = checksum;
+		p = page * WIDTH;
+
 		writeCommand(SH1106_SET_PAGE_ADDRESS + page + rowOffset);
 		writeCommand(colOffset & 0x0F);
 		writeCommand(0x10 | (colOffset >> 4));
@@ -268,6 +276,13 @@ void Adafruit_oled_drv::update() {
 #elif defined(SSD1306_DRIVER_EN)
 	unsigned int fbIndex = 0;
 	for (unsigned int page = 0; page < MAXROW; page++) {
+		uint32_t checksum = rowChecksum(page);
+		if (m_rowChecksumValid && checksum == m_rowChecksum[page]) {
+			continue;
+		}
+		m_rowChecksum[page] = checksum;
+		fbIndex = page * WIDTH;
+
 		writeCommand(0xB0 + page);
 		writeCommand(SSD1306_SET_LOW_COLUMN);
 		writeCommand(SSD1306_SET_HIGH_COLUMN);
@@ -282,6 +297,13 @@ void Adafruit_oled_drv::update() {
 #elif defined(SSD1309_DRIVER_EN)
 	unsigned int fbIndex = 0;
 	for (unsigned int page = 0; page < MAXROW; page++) {
+		uint32_t checksum = rowChecksum(page);
+		if (m_rowChecksumValid && checksum == m_rowChecksum[page]) {
+			continue;
+		}
+		m_rowChecksum[page] = checksum;
+		fbIndex = page * WIDTH;
+
 		writeCommand(0xB0 + page);
 		writeCommand(0x00);
 		writeCommand(0x10);
@@ -295,6 +317,18 @@ void Adafruit_oled_drv::update() {
 #else
 #error "Don't know oled driver type."
 #endif
+	m_rowChecksumValid = true;
+}
+
+uint32_t Adafruit_oled_drv::rowChecksum(int rowIndex) const {
+	const unsigned char* row = &m_pFramebuffer[rowIndex * WIDTH];
+	uint16_t sum = 0;
+	uint16_t sumOfSums = 0;
+	for (int x = 0; x < WIDTH; x++) {
+		sum += row[x];
+		sumOfSums += sum;
+	}
+	return ((uint32_t)sumOfSums << 16) | sum;
 }
 
 void Adafruit_oled_drv::updateRow(int rowID) {
@@ -334,6 +368,7 @@ void Adafruit_oled_drv::updateRow(int rowID) {
 			writeByte(m_pFramebuffer[index]);
 		}
 		stopIIC();
+		m_rowChecksum[rowID] = rowChecksum(rowID);
 	}
 }
 

@@ -37,11 +37,38 @@ void cd_game_dog_handle(ak_msg_t* msg)
 	}
 	break;
 
+	case CD_GAME_DOG_AIM_SET:
+	{
+		APP_DBG_SIG("CD_GAME_DOG_AIM_SET\n");
+		if (get_data_len_common_msg(msg) != sizeof(uint8_t))
+		{
+			break;
+		}
+		uint8_t angle = *get_data_common_msg(msg);
+		if (angle >= CD_GAME_ANGLE_MIN && angle <= CD_GAME_ANGLE_MAX && (angle - CD_GAME_ANGLE_MIN) % CD_GAME_ANGLE_STEP == 0)
+		{
+			dog.angle = angle;
+		}
+	}
+	break;
+
 	case CD_GAME_DOG_HIT:
 	{
 		APP_DBG_SIG("CD_GAME_DOG_HIT\n");
 		dog.hp = (dog.hp > CD_GAME_HIT_DAMAGE) ? (dog.hp - CD_GAME_HIT_DAMAGE) : 0;
 		dog.hit_ticks = DOG_HIT_TICKS;
+	}
+	break;
+
+	case CD_GAME_DOG_HP_SET:
+	{
+		APP_DBG_SIG("CD_GAME_DOG_HP_SET\n");
+		if (get_data_len_common_msg(msg) != sizeof(uint8_t))
+		{
+			break;
+		}
+		uint8_t hp = *get_data_common_msg(msg);
+		dog.hp = (hp > DOG_HP_MAX) ? DOG_HP_MAX : hp;
 	}
 	break;
 

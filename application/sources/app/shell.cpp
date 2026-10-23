@@ -51,6 +51,7 @@
 #include "cd_game_wind.h"
 #include "cd_game_power.h"
 #include "cd_game_missile.h"
+#include "cd_game_link.h"
 
 #if defined (IF_NETWORK_NRF24_EN)
 #include "hal_nrf.h"
@@ -96,6 +97,7 @@ int32_t shell_psv(uint8_t* argv);
 int32_t shell_buzzer(uint8_t* argv);
 int32_t shell_btn(uint8_t* argv);
 int32_t shell_rf(uint8_t* argv);
+int32_t shell_lnk(uint8_t* argv);
 
 /*****************************************************************************/
 /*  command table
@@ -129,6 +131,7 @@ const cmd_line_t lgn_cmd_table[] = {
 	{(const int8_t*)"dbg",		shell_dbg,			(const int8_t*)"dbg"},
 	{(const int8_t*)"btn",		shell_btn,			(const int8_t*)"simulate button press"},
 	{(const int8_t*)"rf",		shell_rf,			(const int8_t*)"rf24 status"},
+	{(const int8_t*)"lnk",		shell_lnk,			(const int8_t*)"game link status / fake rival"},
 
 	/* End Of Table */
 	{(const int8_t*)0,(pf_cmd_func)0,(const int8_t*)0}
@@ -1045,5 +1048,39 @@ int32_t shell_rf(uint8_t* argv) {
 	(void)argv;
 	LOGIN_PRINT("rf24 disabled\n");
 #endif
+	return 0;
+}
+
+/* lnk s                           : link counters
+ * lnk r h                         : fake READY from the rival
+ * lnk r s <wind>                  : fake START
+ * lnk r t <angle> <power>         : fake THROW
+ * lnk r e <result> <cat> <dog> <wind> : fake RESULT */
+int32_t shell_lnk(uint8_t* argv) {
+	uint8_t n = str_parser((char*)argv);
+	char* op = str_parser_get_attr(1);
+	char* what = str_parser_get_attr(2);
+
+	if (n == 2 && *op == 's') {
+		LOGIN_PRINT("link tx:%d rx:%d last:%d\n", link.tx, link.rx, link.last_rx_sig);
+	}
+	else if (n >= 3 && *op == 'r' && *what == 'h') {
+		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RX_READY);
+	}
+	else if (n == 4 && *op == 'r' && *what == 's') {
+		cd_game_link_start_t start = {(int8_t)atoi(str_parser_get_attr(3))};
+		task_post_common_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RX_START, (uint8_t*)&start, sizeof(start));
+	}
+	else if (n == 5 && *op == 'r' && *what == 't') {
+		cd_game_link_throw_t throw_data = {(uint8_t)atoi(str_parser_get_attr(3)), (uint8_t)atoi(str_parser_get_attr(4))};
+		task_post_common_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RX_THROW, (uint8_t*)&throw_data, sizeof(throw_data));
+	}
+	else if (n == 7 && *op == 'r' && *what == 'e') {
+		cd_game_link_result_t result = {(uint8_t)atoi(str_parser_get_attr(3)), (uint8_t)atoi(str_parser_get_attr(4)), (uint8_t)atoi(str_parser_get_attr(5)), (int8_t)atoi(str_parser_get_attr(6))};
+		task_post_common_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RX_RESULT, (uint8_t*)&result, sizeof(result));
+	}
+	else {
+		LOGIN_PRINT("usage: lnk s | lnk r h | r s <wind> | r t <angle> <power> | r e <res> <cat> <dog> <wind>\n");
+	}
 	return 0;
 }

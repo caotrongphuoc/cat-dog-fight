@@ -106,7 +106,7 @@ static void cd_game_power_display()
 
 static void cd_game_aim_display()
 {
-	if (match.phase != MATCH_PHASE_AIM)
+	if (match.state != MATCH_STATE_PLAY || match.phase != MATCH_PHASE_AIM || match.turn != CD_GAME_BOARD_ME)
 	{
 		return;
 	}
@@ -137,6 +137,20 @@ static void cd_game_missile_display()
 	}
 }
 
+static void cd_game_wait_display()
+{
+	if (match.state != MATCH_STATE_WAIT)
+	{
+		return;
+	}
+	view_render.fillRect(CD_GAME_HUD_WAIT_AXIS_X, CD_GAME_HUD_WAIT_AXIS_Y, CD_GAME_HUD_WAIT_WIDTH, CD_GAME_HUD_WAIT_HEIGHT, BLACK);
+	view_render.drawRect(CD_GAME_HUD_WAIT_AXIS_X, CD_GAME_HUD_WAIT_AXIS_Y, CD_GAME_HUD_WAIT_WIDTH, CD_GAME_HUD_WAIT_HEIGHT, WHITE);
+	view_render.setTextSize(1);
+	view_render.setTextColor(WHITE);
+	view_render.setCursor(CD_GAME_HUD_WAIT_TEXT_AXIS_X, CD_GAME_HUD_WAIT_TEXT_AXIS_Y);
+	view_render.print(CD_GAME_BOARD_ME == MATCH_TURN_CAT ? "Waiting for DOG" : "Waiting for CAT");
+}
+
 void view_scr_game_cat_dog()
 {
 	cd_game_hud_display();
@@ -148,11 +162,18 @@ void view_scr_game_cat_dog()
 	cd_game_power_display();
 	cd_game_aim_display();
 	cd_game_missile_display();
+	cd_game_wait_display();
 }
 
 static bool cd_game_can_aim()
 {
-	return (match.state == MATCH_STATE_PLAY) && (match.phase == MATCH_PHASE_AIM);
+	return (match.state == MATCH_STATE_PLAY) && (match.phase == MATCH_PHASE_AIM) && (match.turn == CD_GAME_BOARD_ME);
+}
+
+// Something moves on the field, the tick (and the 43 ms OLED refresh) is only needed then
+static bool cd_game_is_animating()
+{
+	return (power.state == POWER_STATE_CHARGE) || (missile.state == MISSILE_STATE_FLY) || (cat.hit_ticks > 0) || (dog.hit_ticks > 0) || (border.hit_ticks > 0);
 }
 
 static void cd_game_aim_post(uint8_t cat_sig, uint8_t dog_sig)
@@ -185,7 +206,14 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 		task_post_pure_msg(CD_GAME_WIND_ID, CD_GAME_WIND_SETUP);
 		task_post_pure_msg(CD_GAME_POWER_ID, CD_GAME_POWER_SETUP);
 		task_post_pure_msg(CD_GAME_MISSILE_ID, CD_GAME_MISSILE_SETUP);
+		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_SETUP);
 		timer_remove_attr(AC_TASK_DISPLAY_ID, AC_DISPLAY_SHOW_IDLE);
+	}
+	break;
+
+	case CD_GAME_ANIMATE:
+	{
+		APP_DBG_SIG("CD_GAME_ANIMATE\n");
 		timer_set(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK, CD_GAME_TIME_TICK_INTERVAL, TIMER_PERIODIC);
 	}
 	break;
@@ -197,6 +225,10 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 		task_post_pure_msg(CD_GAME_CAT_ID, CD_GAME_CAT_RUN);
 		task_post_pure_msg(CD_GAME_DOG_ID, CD_GAME_DOG_RUN);
 		task_post_pure_msg(CD_GAME_BORDER_ID, CD_GAME_BORDER_RUN);
+		if (!cd_game_is_animating())
+		{
+			timer_remove_attr(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK);
+		}
 	}
 	break;
 
@@ -204,6 +236,7 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 	{
 		APP_DBG_SIG("CD_GAME_EXIT_GAME\n");
 		timer_remove_attr(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK);
+		task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RESET);
 		task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_RESET);
 		SCREEN_TRAN(scr_game_over_handle, &scr_game_over);
 	}
@@ -232,9 +265,19 @@ void scr_game_cat_dog_handle(ak_msg_t* msg)
 	case AC_DISPLAY_BUTTON_MODE_PRESSED:
 	{
 		APP_DBG_SIG("AC_DISPLAY_BUTTON_MODE_PRESSED\n");
+		if (match.state == MATCH_STATE_WAIT)
+		{
+			// Give up waiting for the rival board
+			timer_remove_attr(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK);
+			task_post_pure_msg(CD_GAME_LINK_ID, CD_GAME_LINK_RESET);
+			task_post_pure_msg(CD_GAME_MATCH_ID, CD_GAME_MATCH_RESET);
+			SCREEN_TRAN(scr_game_menu_handle, &scr_game_menu);
+			break;
+		}
 		if (cd_game_can_aim())
 		{
 			task_post_pure_msg(CD_GAME_POWER_ID, CD_GAME_POWER_CHARGE);
+			timer_set(AC_TASK_DISPLAY_ID, CD_GAME_TIME_TICK, CD_GAME_TIME_TICK_INTERVAL, TIMER_PERIODIC);
 		}
 	}
 	break;

@@ -66,6 +66,19 @@ void cd_game_power_handle(ak_msg_t* msg)
 	}
 	break;
 
+	case CD_GAME_POWER_SET:
+	{
+		APP_DBG_SIG("CD_GAME_POWER_SET\n");
+		if (get_data_len_common_msg(msg) != sizeof(uint8_t))
+		{
+			break;
+		}
+		uint8_t value = *get_data_common_msg(msg);
+		power.state = POWER_STATE_LOCKED;
+		power.value = (value > POWER_VALUE_MAX) ? POWER_VALUE_MAX : value;
+	}
+	break;
+
 	default:
 		break;
 	}

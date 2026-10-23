@@ -28,6 +28,7 @@
 #include "cd_game_wind.h"
 #include "cd_game_power.h"
 #include "cd_game_missile.h"
+#include "cd_game_link.h"
 
 extern view_dynamic_t dyn_view_game_cat_dog;
 extern view_screen_t scr_game_cat_dog;
@@ -61,6 +62,14 @@ extern void scr_game_cat_dog_handle(ak_msg_t* msg);
 #define CD_GAME_HUD_STAR_SIZE_BITMAP_X (7)
 #define CD_GAME_HUD_STAR_SIZE_BITMAP_Y (7)
 #define CD_GAME_HUD_STAR_GAP (2)
+
+// Box shown while waiting for the rival board
+#define CD_GAME_HUD_WAIT_AXIS_X (16)
+#define CD_GAME_HUD_WAIT_AXIS_Y (16)
+#define CD_GAME_HUD_WAIT_WIDTH (96)
+#define CD_GAME_HUD_WAIT_HEIGHT (13)
+#define CD_GAME_HUD_WAIT_TEXT_AXIS_X (CD_GAME_HUD_WAIT_AXIS_X + 3)
+#define CD_GAME_HUD_WAIT_TEXT_AXIS_Y (CD_GAME_HUD_WAIT_AXIS_Y + 3)
 
 // Wind strength printed under the arrow
 #define CD_GAME_HUD_WIND_TEXT_AXIS_X (CD_GAME_HUD_WIND_AXIS_X - 2)

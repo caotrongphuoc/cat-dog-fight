@@ -177,6 +177,7 @@ enum {
 /* define signal */
 enum {
 	CD_GAME_TIME_TICK = CD_GAME_DEFINE_SIG,
+	CD_GAME_ANIMATE,
 	CD_GAME_EXIT_GAME,
 };
 
@@ -188,8 +189,10 @@ enum {
 /* define signal */
 enum {
 	CD_GAME_MATCH_SETUP = CD_GAME_DEFINE_SIG,
+	CD_GAME_MATCH_START,
 	CD_GAME_MATCH_THROW,
 	CD_GAME_MATCH_TURN_END,
+	CD_GAME_MATCH_RESULT,
 	CD_GAME_MATCH_RESET,
 };
 
@@ -203,7 +206,9 @@ enum {
 	CD_GAME_CAT_SETUP = CD_GAME_DEFINE_SIG,
 	CD_GAME_CAT_AIM_UP,
 	CD_GAME_CAT_AIM_DOWN,
+	CD_GAME_CAT_AIM_SET,
 	CD_GAME_CAT_HIT,
+	CD_GAME_CAT_HP_SET,
 	CD_GAME_CAT_RUN,
 };
 
@@ -217,7 +222,9 @@ enum {
 	CD_GAME_DOG_SETUP = CD_GAME_DEFINE_SIG,
 	CD_GAME_DOG_AIM_UP,
 	CD_GAME_DOG_AIM_DOWN,
+	CD_GAME_DOG_AIM_SET,
 	CD_GAME_DOG_HIT,
+	CD_GAME_DOG_HP_SET,
 	CD_GAME_DOG_RUN,
 };
 
@@ -242,6 +249,7 @@ enum {
 enum {
 	CD_GAME_WIND_SETUP = CD_GAME_DEFINE_SIG,
 	CD_GAME_WIND_CHANGE,
+	CD_GAME_WIND_SET,
 };
 
 /*****************************************************************************/
@@ -255,6 +263,7 @@ enum {
 	CD_GAME_POWER_CHARGE,
 	CD_GAME_POWER_RUN,
 	CD_GAME_POWER_RELEASE,
+	CD_GAME_POWER_SET,
 };
 
 /*****************************************************************************/
@@ -267,6 +276,26 @@ enum {
 	CD_GAME_MISSILE_SETUP = CD_GAME_DEFINE_SIG,
 	CD_GAME_MISSILE_THROW,
 	CD_GAME_MISSILE_RUN,
+};
+
+/*****************************************************************************/
+/*  Cat dog fight game 'LINK' task define
+ */
+/*****************************************************************************/
+/* define timer */
+#define CD_GAME_LINK_READY_INTERVAL									(1000)
+/* define signal */
+enum {
+	CD_GAME_LINK_SETUP = CD_GAME_DEFINE_SIG,
+	CD_GAME_LINK_READY_TICK,
+	CD_GAME_LINK_SEND_START,
+	CD_GAME_LINK_SEND_THROW,
+	CD_GAME_LINK_SEND_RESULT,
+	CD_GAME_LINK_RESET,
+	CD_GAME_LINK_RX_READY,
+	CD_GAME_LINK_RX_START,
+	CD_GAME_LINK_RX_THROW,
+	CD_GAME_LINK_RX_RESULT,
 };
 
 /*****************************************************************************/

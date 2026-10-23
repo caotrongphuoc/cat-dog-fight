@@ -171,11 +171,16 @@ protected:
 	void stopIIC();//turn off the IIC.
 	void startDataSequence();
 
+	//checksum of one row, update() skips rows that did not change.
+	uint32_t rowChecksum(int rowIndex) const;
+
 protected:
 	int m_sda;
 	int m_scl;
 	int m_res;
 	unsigned char* m_pFramebuffer;
+	uint32_t m_rowChecksum[MAXROW];
+	bool m_rowChecksumValid;
 };
 
 #endif //__ADAFRUIT_OLED_DRV_H

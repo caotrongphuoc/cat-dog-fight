@@ -15,6 +15,7 @@
 
 #include "cd_game_cat.h"
 #include "cd_game_dog.h"
+#include "cd_game_link.h"
 
 // Ground line, every object stands on it
 #define CD_GAME_GROUND_AXIS_Y (63)
@@ -35,10 +36,11 @@
 #define CD_GAME_BOARD_ME (MATCH_TURN_CAT)
 #endif
 
-// Match states
+// Match states: wait for the rival board, play, over
 enum
 {
 	MATCH_STATE_OFF = 0,
+	MATCH_STATE_WAIT,
 	MATCH_STATE_PLAY,
 	MATCH_STATE_OVER,
 };
@@ -63,6 +65,13 @@ typedef struct
 	uint8_t turn;
 	uint8_t phase;
 	uint8_t winner;
+
+	// Rival turn: the local copy of the flight landed / the thrower sent its result
+	bool rival_landed;
+	bool rival_result;
+	uint8_t result_cat_hp;
+	uint8_t result_dog_hp;
+	int8_t result_wind;
 } cd_game_match_t;
 
 extern cd_game_match_t match;

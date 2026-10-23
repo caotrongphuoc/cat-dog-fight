@@ -26,6 +26,21 @@ void cd_game_wind_handle(ak_msg_t* msg)
 	}
 	break;
 
+	case CD_GAME_WIND_SET:
+	{
+		APP_DBG_SIG("CD_GAME_WIND_SET\n");
+		if (get_data_len_common_msg(msg) != sizeof(int8_t))
+		{
+			break;
+		}
+		int8_t speed = (int8_t)*get_data_common_msg(msg);
+		if (speed >= -WIND_SPEED_MAX && speed <= WIND_SPEED_MAX)
+		{
+			wind.speed = speed;
+		}
+	}
+	break;
+
 	default:
 		break;
 	}
