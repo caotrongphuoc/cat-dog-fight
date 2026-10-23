@@ -90,7 +90,7 @@ void scr_game_menu_handle(ak_msg_t* msg)
 		}
 		else
 		{
-			SCREEN_TRAN(scr_idle_handle, &scr_idle);
+			SCREEN_TRAN(scr_startup_handle, &scr_startup);
 		}
 	}
 	break;

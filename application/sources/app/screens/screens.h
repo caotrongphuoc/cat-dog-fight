@@ -22,11 +22,6 @@
 
 #include "screens_bitmap.h"
 
-// scr_idle
-extern view_dynamic_t dyn_view_idle;
-extern view_screen_t scr_idle;
-extern void scr_idle_handle(ak_msg_t* msg);
-
 // scr_startup
 extern view_dynamic_t dyn_view_startup;
 extern view_screen_t scr_startup;
