@@ -256,29 +256,12 @@ The kit has three buttons: **[Mode]**, **[Up]**, and **[Down]**.
 
 > **Note:** For the complete signal flow, see [Runtime Signal Processing](docs/03-design-sequence-runtime.md).
 
-```mermaid
-sequenceDiagram
-    participant P as Player buttons
-    participant S as Game screen
-    participant M as Match
-    participant W as Power and Missile
-    participant L as Link or CPU
-
-    P->>S: Mode pressed and held
-    S->>W: POWER_CHARGE and start the tick
-    P->>S: Mode released
-    S->>W: POWER_RELEASE
-    W->>M: MATCH_THROW
-    M->>W: MISSILE_THROW
-    M->>L: LINK_SEND_THROW (2 Players)
-    loop every 50 ms tick
-        S->>W: POWER_RUN and MISSILE_RUN
-    end
-    W->>M: MATCH_TURN_END after a hit, the wall or the ground
-    M->>L: LINK_SEND_RESULT (2 Players)
-    M->>L: CPU_PLAY when the computer plays next (1 Player)
-    L->>M: MATCH_THROW for the other player
-```
+<table align="center">
+  <tr>
+    <td align="center"><img src="resources/images/design-sequence/cd_game_sequence.png" alt="Cat vs Dog basic sequence: boot and menu, match setup with the RF24 handshake, aim and throw, flight and result, the computer or the other kit's turn, and game over or link lost" width="1000"/></td>
+  </tr>
+</table>
+<p align="center"><strong><em>Figure 8:</em></strong> Game sequence logic</p>
 
 ## Contact & Support
 
