@@ -118,7 +118,7 @@ This section describes the screens and objects of **Cat vs Dog Fight**.
 
 <table align="center">
   <tr>
-    <td align="center"><img src="resources/images/screens/scr_game_menu.png" alt="Menu: CAT vs DOG title, the selected entry, the role of this board and the saved score" width="720"/></td>
+    <td align="center"><img src="resources/images/screens/framed/scr_game_menu.gif" alt="Banner-themed card around the captured menu cycling through 1 Player, 2 Players, Level, Sound and Exit" width="720"/></td>
   </tr>
 </table>
 <p align="center"><strong><em>Figure 3:</em></strong> Menu screen</p>
@@ -135,7 +135,7 @@ The menu also shows the role of this board (**You: CAT** or **You: DOG**) and th
 
 <table align="center">
   <tr>
-    <td align="center"><img src="resources/images/screens/scr_game_cat_dog.png" alt="Playing screen: HP bars, wind arrow with its strength, the cat with its power bar, a fish flying over the brick wall, and the dog" width="720"/></td>
+    <td align="center"><img src="resources/images/screens/framed/scr_game_cat_dog.gif" alt="Banner-themed card around a captured turn: the cat charges and throws a fish over the wall, then the computer throws a bone back" width="720"/></td>
   </tr>
 </table>
 <p align="center"><strong><em>Figure 4:</em></strong> Playing screen</p>
@@ -149,10 +149,10 @@ The playing screen shows:
 
 <table align="center">
   <tr>
-    <td align="center"><img src="resources/images/screens/scr_game_wait.png" alt="Waiting for DOG box while the cat board waits for the dog board" width="720"/></td>
+    <td align="center"><img src="resources/images/screens/framed/scr_game_wait.gif" alt="Banner-themed card around a captured 2 Players sequence: Waiting for DOG, the match starts, a throw, then LINK LOST and back to the menu" width="720"/></td>
   </tr>
 </table>
-<p align="center"><strong><em>Figure 5:</em></strong> Waiting for the other kit (2 Players)</p>
+<p align="center"><strong><em>Figure 5:</em></strong> 2 Players: waiting, handshake and LINK LOST</p>
 
 #### Objects in the Game:
 
@@ -167,47 +167,47 @@ The playing screen shows:
   </thead>
   <tbody>
     <tr>
-      <td align="center" valign="middle"><img src="resources/images/objects/cd_game_match.png" alt="Game over screen: CAT WINS, You win" width="256" height="144"/></td>
+      <td align="center" valign="middle"><img src="resources/images/objects/table/cd_game_match.gif" alt="The last throw of a captured match and the CAT WINS screen" width="256" height="144"/></td>
       <td align="center"><strong>Match</strong></td>
       <td>Game mode, match state, whose turn it is and the winner. Ends each turn, and keeps the mute setting, the computer level and the wins in EEPROM.</td>
     </tr>
     <tr>
-      <td align="center" valign="middle"><img src="resources/images/objects/cd_game_cat.png" alt="Cat bitmap" width="256" height="144"/></td>
+      <td align="center" valign="middle"><img src="resources/images/objects/table/cd_game_cat.gif" alt="Cat bitmap with the hit effect: shake, blink and star" width="256" height="144"/></td>
       <td align="center"><strong>Cat</strong></td>
       <td>Left player. Throws fish. Holds its HP, throw angle and hit effect.</td>
     </tr>
     <tr>
-      <td align="center" valign="middle"><img src="resources/images/objects/cd_game_dog.png" alt="Dog bitmap" width="256" height="144"/></td>
+      <td align="center" valign="middle"><img src="resources/images/objects/table/cd_game_dog.gif" alt="Dog bitmap with the hit effect: shake, blink and star" width="256" height="144"/></td>
       <td align="center"><strong>Dog</strong></td>
       <td>Right player. Throws bones. Holds its HP, throw angle and hit effect.</td>
     </tr>
     <tr>
-      <td align="center" valign="middle"><img src="resources/images/objects/cd_game_border.png" alt="Brick wall with dust on its side" width="256" height="144"/></td>
+      <td align="center" valign="middle"><img src="resources/images/objects/table/cd_game_border.gif" alt="Brick wall with the two dust frames where a missile hits it" width="256" height="144"/></td>
       <td align="center"><strong>Border</strong></td>
       <td>Brick wall in the middle of the field. Stops low throws and shows dust where it was hit.</td>
     </tr>
     <tr>
-      <td align="center" valign="middle"><img src="resources/images/objects/cd_game_wind.png" alt="Wind arrow pointing right with strength 5" width="256" height="144"/></td>
+      <td align="center" valign="middle"><img src="resources/images/objects/table/cd_game_wind.gif" alt="Wind arrow and strength changing turn after turn in a captured match" width="256" height="144"/></td>
       <td align="center"><strong>Wind</strong></td>
       <td>Wind from -5 to +5, picked again every turn. Pushes the flight left or right.</td>
     </tr>
     <tr>
-      <td align="center" valign="middle"><img src="resources/images/objects/cd_game_power.png" alt="Power bar over the cat and its aim line" width="256" height="144"/></td>
+      <td align="center" valign="middle"><img src="resources/images/objects/table/cd_game_power.gif" alt="Captured power bar filling over the cat, with its aim line" width="256" height="144"/></td>
       <td align="center"><strong>Power</strong></td>
       <td>Power bar. Sweeps 0 to 100 and back while [Mode] is held, and locks when it is released.</td>
     </tr>
     <tr>
-      <td align="center" valign="middle"><img src="resources/images/objects/cd_game_missile.png" alt="Fish and bone bitmaps" width="256" height="144"/></td>
+      <td align="center" valign="middle"><img src="resources/images/objects/table/cd_game_missile.gif" alt="Captured fish flight over the wall and the bone thrown back" width="256" height="144"/></td>
       <td align="center"><strong>Missile</strong></td>
       <td>The fish or bone in flight. Integer physics with gravity and wind, and collision with the wall, the other player and the ground.</td>
     </tr>
     <tr>
-      <td align="center" valign="middle"><img src="resources/images/objects/cd_game_link.png" alt="Waiting for DOG box over the field" width="256" height="144"/></td>
+      <td align="center" valign="middle"><img src="resources/images/objects/table/cd_game_link.gif" alt="Captured 2 Players sequence: waiting, match start, throw, LINK LOST" width="256" height="144"/></td>
       <td align="center"><strong>Link</strong></td>
       <td>RF24 link to the other kit: handshake, throws, results, heartbeat and loss detection.</td>
     </tr>
     <tr>
-      <td align="center" valign="middle"><img src="resources/images/objects/cd_game_cpu.png" alt="The dog aiming during the computer turn" width="256" height="144"/></td>
+      <td align="center" valign="middle"><img src="resources/images/objects/table/cd_game_cpu.gif" alt="Captured computer turn: the dog aims, then throws a bone" width="256" height="144"/></td>
       <td align="center"><strong>CPU</strong></td>
       <td>Computer player for 1 Player. Simulates throws with the game's own flight and misses on purpose by its level.</td>
     </tr>
@@ -240,14 +240,14 @@ The kit has three buttons: **[Mode]**, **[Up]**, and **[Down]**.
 
 <table align="center">
   <tr>
-    <td align="center"><img src="resources/images/screens/scr_game_cat_dog_hit.png" alt="The dog blinking with a star over its head after a hit, while the computer aims" width="720"/></td>
+    <td align="center"><img src="resources/images/screens/framed/scr_game_cat_dog_hit.gif" alt="Banner-themed card around the captured hit effect: the fish lands, the dog shakes and blinks under a star" width="720"/></td>
   </tr>
 </table>
 <p align="center"><strong><em>Figure 6:</em></strong> Hit effect</p>
 
 <table align="center">
   <tr>
-    <td align="center"><img src="resources/images/screens/scr_game_over.png" alt="Game over screen: CAT WINS, You win, the winner and the button hint" width="720"/></td>
+    <td align="center"><img src="resources/images/screens/framed/scr_game_over.gif" alt="Banner-themed card around the captured last throw and the CAT WINS screen" width="720"/></td>
   </tr>
 </table>
 <p align="center"><strong><em>Figure 7:</em></strong> Game over screen</p>

@@ -22,7 +22,7 @@ the cat's side to the dog's side.
 - **Panels:** MENU, GAMEPLAY and GAME OVER are framebuffers from the
   [kit capture](../captures/README.md); GAMEPLAY plays 58 consecutive captured samples of the
   cat's first turn in their recorded order and timing. 2 PLAYERS is the "Waiting for DOG"
-  framebuffer read back from the earlier kit capture in `screens/scr_game_wait.png`. AK BASE KIT
+  framebuffer from the [2 Players capture](../captures/cd_game_screens_uart.json). AK BASE KIT
   is the repository's kit photograph. OLED panels are enlarged with nearest-neighbour scaling,
   the photograph with Lanczos.
 

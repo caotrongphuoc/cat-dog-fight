@@ -467,7 +467,7 @@ docs/
 A few important notes:
 
 - Documentation files (`.md`) use `kebab-case` (hyphens). Source files and folders use `snake_case` (underscores). The difference is intentional: `kebab-case` is the standard convention for Markdown slugs and URLs.
-- Images that go with a document live under `resources/images/<topic>/`, named after what they show. For example: `resources/images/objects/cd_game_missile.png`.
+- Images that go with a document live under `resources/images/<topic>/`, named after what they show. For example: `resources/images/objects/table/cd_game_missile.gif`.
 - Sequence diagrams are written in Mermaid inside the document. Do not use `;` inside a Mermaid label, it breaks the diagram.
 - When adding a new document, continue the sequence number from the current maximum and keep the same category together to preserve a natural reading order.
 - Renaming a documentation file must be done with `git mv` so that the rename history is tracked properly.

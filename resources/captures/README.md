@@ -38,3 +38,22 @@ was flashed back.
 Each sample stores the 1,024-byte framebuffer in page layout: byte `(y // 8) * 128 + x`,
 bit `y % 8`. The GIF enlarges every pixel 4× (512×256) with nearest-neighbour scaling, a fixed
 black and white palette, and clears each frame before drawing the next one.
+
+## Menu and 2 Players screens
+
+[`cd_game_screens_uart.json`](cd_game_screens_uart.json) holds two more sequences recorded
+on **2026-10-24** with the same temporary capture build, used by the menu and 2 Players cards
+and by the Link preview:
+
+- **`menu`:** the menu on each of its five items (1 Player, 2 Players, Level, Sound, Exit) and
+  back to 1 Player, one sample per press of DOWN, held 0.9 s each.
+- **`two_players`:** the cat kit selects 2 Players and shows "Waiting for DOG". The second kit
+  runs the normal release image with `BOARD=dog`; its DOWN and MODE pins were pulled low over SWD
+  to select 2 Players, so the two kits made a real RF24 handshake. The cat charged and threw,
+  then the dog kit's CPU was halted over SWD for 12 s to stand in for a kit losing power. The cat
+  kit showed LINK LOST after its 6 s timeout and went back to the menu.
+
+The capture rules are the same as for the demo (game tick removed during each dump, 50 ms
+between samples, identical neighbours merged). After the capture both kits were flashed back to
+their normal release images (`BOARD=cat` on the ST-Link kit, `BOARD=dog` on the USB kit), and
+`shell.cpp` was restored from Git.
