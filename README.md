@@ -23,7 +23,7 @@
 ## Demo
 
 <p align="center">
-  <img src="resources/videos/cat_dog_fight_demo.gif" alt="Frames captured from the kit framebuffer: menu, the cat aiming, charging the power bar, the fish flying over the wall, the dog hit, the computer aiming, dust on the wall, and the game over screen" width="720"/>
+  <img src="resources/videos/cat_dog_fight_demo.gif" alt="OLED demo recorded from the kit: boot logo, menu, a full 1 Player match where the cat charges, throws fish over the wall and hits the dog while the computer throws bones back, then CAT WINS and back to the menu" width="720"/>
 </p>
 
 ## Documentation
