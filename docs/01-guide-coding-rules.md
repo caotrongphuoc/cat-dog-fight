@@ -500,17 +500,3 @@ If you have any questions, suggestions, or feedback about this project or firmwa
 <a href="https://www.linkedin.com/in/cao-trong-phuoc/">
   <img src="https://img.shields.io/badge/LinkedIn-Cao%20Trong%20Phuoc-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
 </a>
-
-<p style="font-size: 20px;"><strong>Josef Tan</strong> - Software Engineer - Embedded Systems</p>
-
-```text
-For questions related to this project, embedded systems, or firmware development, please feel free to reach out through GitHub or LinkedIn.
-```
-
-<a href="https://github.com/joseftanlang">
-  <img src="https://img.shields.io/badge/GitHub-joseftanlang-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
-</a>
-
-<a href="https://www.linkedin.com/in/josef-tan/">
-  <img src="https://img.shields.io/badge/LinkedIn-Josef%20Tan-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
-</a>
