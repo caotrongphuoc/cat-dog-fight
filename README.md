@@ -15,7 +15,9 @@
 # Cat vs Dog Fight - Turn-based throwing duel built on AK Embedded Base Kit
 
 <p align="center">
-  <img src="resources/images/cat_dog_fight_banner.png" alt="Cat vs Dog Fight - the menu and a fish flying over the wall, captured from the kit OLED" width="1280"/>
+  <a href="resources/images/cat_dog_fight_banner_2x1.png">
+    <img src="resources/images/cat_dog_fight_banner.gif" alt="Cat vs Dog: aim, charge, throw - the cat and the dog throwing fish and bones over the wall, and the captured menu, gameplay, waiting and game over screens on the AK Embedded Base Kit; click for the static 2:1 cover" width="1280" height="640"/>
+  </a>
 </p>
 
 ---
