@@ -5,11 +5,11 @@
 </div>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/language-C%2B%2B-blue?style=flat-square&logo=c%2B%2B" alt="Language">
-  <img src="https://img.shields.io/badge/mcu-STM32L151-blue?style=flat-square" alt="MCU">
-  <img src="https://img.shields.io/badge/framework-Active%20Kernel-blue?style=flat-square" alt="Framework">
-  <img src="https://img.shields.io/badge/radio-nRF24L01-blue?style=flat-square" alt="Radio">
-  <img src="https://img.shields.io/badge/hardware-AK%20Base%20Kit-blue?style=flat-square" alt="Hardware">
+  <img src="https://img.shields.io/badge/language-C%2B%2B-orange?style=flat-square&logo=c%2B%2B" alt="Language">
+  <img src="https://img.shields.io/badge/mcu-STM32L151-orange?style=flat-square" alt="MCU">
+  <img src="https://img.shields.io/badge/framework-Active%20Kernel-orange?style=flat-square" alt="Framework">
+  <img src="https://img.shields.io/badge/radio-nRF24L01-orange?style=flat-square" alt="Radio">
+  <img src="https://img.shields.io/badge/hardware-AK%20Base%20Kit-orange?style=flat-square" alt="Hardware">
 </p>
 
 # Cat vs Dog Fight - Turn-based throwing duel built on AK Embedded Base Kit
