@@ -103,7 +103,7 @@ Flash Partitions Layout
     <td align="center"><img src="resources/images/board/board-view.jpg" alt="AK Embedded Base Kit top and bottom views" width="900"/></td>
   </tr>
 </table>
-<p align="center"><strong><em>Figure 2:</em></strong> Board view Top + Bottom </p>
+<p align="center"><strong><em>Figure 2:</em></strong> Board view </p>
 
 **nRF24L01 radio:** SPI1 (`PA5` SCK, `PA6` MISO, `PA7` MOSI), CE `PA8`, CSN `PB9`, IRQ `PB1`. Channel 120, 2 Mbps. Each board gets its RF24 address at build time:
 
